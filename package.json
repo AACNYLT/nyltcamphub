@@ -1,0 +1,14 @@
+{
+  "name": "NYLT_17",
+  "version": "0.0.1",
+  "description": "NYLT CampHub Node Server",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Aroon Narayanan",
+  "license": "ISC",
+  "dependencies": {
+
+  }
+}
