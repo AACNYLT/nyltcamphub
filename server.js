@@ -21,7 +21,7 @@ var options = multer.diskStorage({
 });
 var scout_image_uploads = multer({storage: options});
 
-mongoose.connect('mongodb://localhost/db');
+mongoose.connect('mongodb://api:camphub@ds030719.mlab.com:30719/CampHub_DB');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
