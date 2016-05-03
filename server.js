@@ -36,6 +36,11 @@ app.use(bodyParser.json());
   }
 ));*/
 
+app.route('/')
+	.get(function(req,res){
+		res.json({message: 'Server running.'});
+	});
+
 app.route('/authenticate')
 	.get(function(req,res){
 		if (req.query.barcode) {
@@ -342,5 +347,7 @@ apirouter.route('/courses/:courseid')
 
 app.use(apirouter);
 
-app.listen(3000);
+var port = process.env.port || 3000;
+
+app.listen(port);
 console.log('Server available on port 3000');
