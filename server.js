@@ -207,6 +207,16 @@ apirouter.route('/scouts/:scoutid/activity/evaluations')
 				res.json(evallist);
 		});
 	});
+	
+apirouter.route('/scouts/:scoutid/activity/interviews')
+	.get(function(req,res){
+		Interview.find({Interviewer: req.params.scoutid}).exec(function(err,interviewlist){
+			if (err)
+				res.send(err);
+			else
+				res.json(interviewlist);
+		});
+	});
 
 apirouter.route('/evaluations')
 	.get(function(req,res){
