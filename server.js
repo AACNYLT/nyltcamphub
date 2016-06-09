@@ -22,6 +22,7 @@ var options = multer.diskStorage({
 var scout_image_uploads = multer({storage: options});
 
 mongoose.connect('mongodb://api:camphub@ds030719.mlab.com:30719/CampHub_DB');
+//mongoose.connect('mongodb://localhost:27017');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -38,7 +39,7 @@ app.use(bodyParser.json());
 
 app.route('/')
 	.get(function(req,res){
-		res.json({message: 'Server running.'});
+		res.sendFile(path.join(__dirname,"/static/index.html"));
 	});
 
 app.route('/authenticate')
@@ -61,6 +62,40 @@ app.route('/authenticate')
 			res.sendStatus(500);
 		}
 	});
+
+var staticrouter = express.Router();
+
+staticrouter.get('/angular', function(req,res){
+
+});
+
+staticrouter.get('/angular-route', function(req,res){
+
+});
+
+staticrouter.get('/jquery', function(req,res){
+
+});
+
+staticrouter.get('/css', function(req,res){
+	res.sendFile(path.join(__dirname,"/static/styles.css"));
+});
+
+staticrouter.get('/indexController', function(req,res){
+	res.sendFile(path.join(__dirname,"/static/indexController.js"));
+});
+
+staticrouter.get('/login', function(req,res){
+	res.sendFile(path.join(__dirname,"/static/login.html"));
+});
+
+staticrouter.get('/main', function(req,res){
+	res.sendFile(path.join(__dirname,"/static/main.html"));
+});
+
+staticrouter.get('/scoutpage', function(req,res){
+
+});
 
 var apirouter = express.Router();
 
@@ -356,8 +391,9 @@ apirouter.route('/courses/:courseid')
 	});
 
 app.use(apirouter);
+app.use('/static', staticrouter);
 
-var port = process.env.port || 3000;
+var port = process.env.port || 80;
 
 app.listen(port);
-console.log('Server available on port 3000');
+console.log('Server available on port ' + port);

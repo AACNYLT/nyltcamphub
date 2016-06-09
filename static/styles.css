@@ -1,0 +1,29 @@
+body{
+   font-family: 'Open Sans', sans-serif; 
+}
+.chButton{   
+    background: lightgrey;
+    border: 1px solid grey;
+}
+.scoutItem{
+    list-style: none;
+}
+.loginInput {
+    max-width: 300px;
+    border: none;
+    border-bottom: 1px solid black;
+}
+.scoutWindow {
+    /*display: none;*/
+    position: fixed;
+    top:10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    z-index: 100;
+    background: white;
+}
+.mainPage {
+    -webkit-filter: blur(7px); /* Chrome, Opera, etc. */
+    filter: blur(7px); /* Firefox 35+, eventually all */
+}
