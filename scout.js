@@ -4,6 +4,7 @@ Schema = mongoose.Schema;
 var Scout = new Schema({
 	FirstName: String,
 	LastName: String,
+	Gender: String,
 	DateOfBirth: String,
 	ScoutID: Number,
 	BSAID: Number,
