@@ -26,7 +26,13 @@ app.controller('indexController', function($scope, $http){
         $http.get('/authenticate?username=' + $scope.loginPage.username + '&password=' + $scope.loginPage.password).then(function(response){
             if(response.data){
                 $scope.CurrentUser = response.data;
-                $http.get('/scouts').then(function(scoutResp){
+                var url = "";
+                if($scope.CurrentUser.IsAdmin) {
+                    url = '/scouts';
+                } else {
+                    url = '/scouts?courseid=' + $scope.CurrentUser.CourseID;
+                }
+                $http.get(url).then(function(scoutResp){
                     if(scoutResp.data){
                         $scope.page = '/static/main';
                         $scope.scouts = scoutResp.data;
