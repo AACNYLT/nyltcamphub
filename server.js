@@ -94,7 +94,7 @@ staticrouter.get('/main', function(req,res){
 });
 
 staticrouter.get('/scoutpage', function(req,res){
-
+	res.sendFile(path.join(__dirname, "/static/scout.html"));
 });
 
 var apirouter = express.Router();

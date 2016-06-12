@@ -2,9 +2,12 @@
     <div class="mainPage">
 <h1>CampHub</h1>
 <ul class="scoutList" ng-repeat="s in scouts">
-    <li class="scoutItem">{{s.FirstName}} {{s.LastName}}</li>
+    <li class="scoutItem" ng-click="itemClick(s)">
+        <img class="scoutItemChild" src="/scouts/{{s.ScoutID}}/image" /><div class="scoutItemChild"><h3>{{s.FirstName}} {{s.LastName}}</h3><span>{{s.Position}}, {{s.Team}}</span><div>
+    </li>
 </ul>
 </div>
-<div class="scoutWindow">
+<div class="modal"></div>
+<div class="scoutWindow scroll-y" ng-include="scoutWindow">
     </div>
 </div>

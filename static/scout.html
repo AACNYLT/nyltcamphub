@@ -1,0 +1,35 @@
+<div>
+    <div class="scoutHeader">
+        <img class="headerContents" src="/scouts/{{selectedScout.ScoutID}}/image" />
+        <div class="headerContents"><h2>{{selectedScout.FirstName}} {{selectedScout.LastName}}</h2><h3>{{selectedScout.Position}}, {{selectedScout.Team}}</h3></div>
+    </div>
+    <div class="scoutContent">
+        <div class="evaluation">
+            <h3>Create Evaluation</h3>
+            <input type="text" ng-disabled="isDayFinal()" placeholder="Day" ng-model="newEval.Day"></input> <br />
+            <b>knowledge:</b><select ng-model="newEval.Knowledge" ng-options="o for o in ratingOptions"></select><br />
+            <b>skill:</b><select ng-model="newEval.Skill" ng-options="o for o in ratingOptions"></select><br />
+            <b>confidence:</b><select ng-model="newEval.Confidence" ng-options="o for o in ratingOptions"></select><br />
+            <b>motivation:</b><select ng-model="newEval.Motivation" ng-options="o for o in ratingOptions"></select><br />
+            <b>enthusiasm:</b><select ng-model="newEval.Enthusiasm" ng-options="o for o in ratingOptions"></select><br />
+            <b>recommendation:</b><select ng-model="newEval.Recommend" ng-options="o for o in recommendOptions"></select><br />
+            <b>comments: </b><textarea ng-model="newEval.Comments"></textarea><br />
+            <button ng-click="createEval()">Save</button>
+        </div>
+        <ul class="evalList">
+            <li ng-repeat="e in selectedScout.evaluations" id="eval-{{$index}}" class="evaluation">
+                <h3>Day {{e.Day}} by {{e.EvaluatorPosition}}</h3>
+                <b>knowledge:</b><span class="staticStat"> {{e.Knowledge}}</span><select class="editStat" ng-model="e.Knowledge" ng-options="o for o in ratingOptions"></select><br />
+                <b>skill:</b><span class="staticStat"> {{e.Skill}}</span><select class="editStat" ng-model="e.Skill" ng-options="o for o in ratingOptions"></select><br />
+                <b>confidence:</b><span class="staticStat"> {{e.Confidence}}</span><select class="editStat" ng-model="e.Confidence" ng-options="o for o in ratingOptions"></select><br />
+                <b>motivation:</b><span class="staticStat"> {{e.Motivation}}</span><select class="editStat" ng-model="e.Motivation" ng-options="o for o in ratingOptions"></select><br />
+                <b>enthusiasm:</b><span class="staticStat"> {{e.Enthusiasm}}</span><select class="editStat" ng-model="e.Enthusiasm" ng-options="o for o in ratingOptions"></select><br />
+                <b>recommendation:</b><span class="staticStat"> {{e.Recommend}}</span><select class="editStat" ng-model="e.Recommend" ng-options="o for o in recommendOptions"></select><br />
+                <b>comments: </b><span class="staticStat">{{e.Comments}}</span><textarea class="editStat" ng-model="e.Comments"></textarea><br />
+                <button ng-disabled="checkEditable(e.EvaluatorID)" class="staticStat" ng-click="editEval($index)">Edit</button><button ng-click="saveEval($index,e)" class="editStat">Save</button>
+            </li>
+        </ul>
+
+    </div>
+    <div class="exit" ng-click="exit()">X</div>
+</div>
