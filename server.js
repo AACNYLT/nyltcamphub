@@ -21,8 +21,8 @@ var options = multer.diskStorage({
 });
 var scout_image_uploads = multer({storage: options});
 
-mongoose.connect('mongodb://api:camphub@ds030719.mlab.com:30719/CampHub_DB');
-//mongoose.connect('mongodb://localhost:27017');
+///mongoose.connect('mongodb://api:camphub@ds030719.mlab.com:30719/CampHub_DB');
+mongoose.connect('mongodb://localhost:27017');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -159,8 +159,15 @@ apirouter.route('/scouts/:scoutid')
 							Interview.remove({ScoutID: req.params.scoutid}, function(err,interviews){
 								if(err)
 									res.send(err);
-								else
-									res.json({message: 'Successfully deleted'});
+								else {
+									fs.unlink(path.join(__dirname, "/images" + req.params.scoutid), function(err) {
+										if(err)
+											res.send(err);
+										else {
+											res.json({message: 'Successfully deleted'});
+										}
+									});
+								}
 							});
 						}
 					});
@@ -179,7 +186,13 @@ apirouter.route('/scouts/:scoutid/image')
 		res.json({message: 'File uploaded.'});
 	})
 	.delete(function(req,res){
-		//delete scout image
+		fs.unlink(path.join(__dirname, "/images" + req.params.scoutid), function(err) {
+			if(err)
+				res.send(err);
+			else {
+				res.json({message: 'Successfully deleted'});
+			}
+		});
 	});
 
 apirouter.route('/scouts/:scoutid/evaluations')
