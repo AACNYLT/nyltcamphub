@@ -4,8 +4,8 @@ Schema = mongoose.Schema;
 var Interview = new Schema({
 	InterviewID: String,
 	ScoutID: Number,
-	Created: String,
-	LastModified: String,
+	Created: Date,
+	LastModified: Date,
 	Year: Number,
 	Interviewer: Number,
 	TG: Boolean,

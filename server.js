@@ -15,13 +15,6 @@ var Course = require('./course.js');
 var apirouter = require('./api.js');
 
 var app = express();
-var options = multer.diskStorage({
-	destination: 'images/',
-	filename: function(req,file,cb){
-		cb(null,req.params.scoutid);
-	}
-});
-var scout_image_uploads = multer({storage: options});
 
 ///mongoose.connect('mongodb://api:camphub@ds030719.mlab.com:30719/CampHub_DB');
 mongoose.connect('mongodb://localhost:27017');

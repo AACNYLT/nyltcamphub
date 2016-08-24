@@ -1,5 +1,21 @@
 var express = require('express');
+var multer = require('multer');
+var path = require('path');
+var fs = require('fs');
 var apirouter = express.Router();
+
+var Scout = require('./scout.js');
+var Evaluation = require('./evaluation.js');
+var Interview = require('./interview.js');
+var Course = require('./course.js');
+
+var options = multer.diskStorage({
+	destination: 'images/',
+	filename: function(req,file,cb){
+		cb(null,req.params.scoutid);
+	}
+});
+var scout_image_uploads = multer({storage: options});
 
 apirouter.route('/scouts')
 	.get(function(req,res){
@@ -148,24 +164,15 @@ apirouter.route('/scouts/:scoutid/activity')
 
 	});
 
-apirouter.route('/scouts/:scoutid/activity/evaluations')
+apirouter.route('/scouts/:scoutid/activity/:activityType')
 	.get(function(req,res){
-		Evaluation.find({EvaluatorID: req.params.scoutid}).exec(function(err,evallist){
-			if (err)
-				res.send(err);
-			else
-				res.json(evallist);
-		});
-	});
-	
-apirouter.route('/scouts/:scoutid/activity/interviews')
-	.get(function(req,res){
-		Interview.find({Interviewer: req.params.scoutid}).exec(function(err,interviewlist){
-			if (err)
-				res.send(err);
-			else
-				res.json(interviewlist);
-		});
+		if(req.params.activityType = "evaluations"){
+
+		} else if (req.params.activityType = "interviews"){
+
+		} else {
+			
+		}
 	});
 
 apirouter.route('/evaluations')
@@ -179,6 +186,19 @@ apirouter.route('/evaluations')
 	})
 	.post(function(req,res){
 		var evaluation = new Evaluation(req.body);
+		
+		//Logging:
+		var activity = new Activity();
+		activity.ScoutID = evaluation.EvaluatorID;
+		activity.TargetID = evaluation.ScoutID;
+		activity.AttachmentType = "Evaluation";
+		activity.Action = "POST";
+		activity.Timestamp = new Date();
+		activity.AttachedEval = evaluation;
+		activity.save(function(err){
+			if (err) {console.log(err)}
+		});
+
 		evaluation.save(function(err) {
             if (err)
                 res.send(err);

@@ -19,8 +19,8 @@ var Scout = new Schema({
 	IsStaff: Boolean,
 	CourseName: String,
 	CourseID: Number,
-	LastModified: String,
-	Create: String
+	LastModified: Date,
+	Created: Date
 });
 
 module.exports = mongoose.model('Scout',Scout);

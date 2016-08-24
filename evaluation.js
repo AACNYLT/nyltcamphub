@@ -4,8 +4,8 @@ Schema = mongoose.Schema;
 var Evaluation = new Schema({
 	EvalID: String,
 	ScoutID: Number,
-	Created: String,
-	LastModified: String,
+	Created: Date,
+	LastModified: Date,
 	LastModifiedBy: Number,
 	EvaluatorPosition: String,
 	EvaluatorID: Number,
