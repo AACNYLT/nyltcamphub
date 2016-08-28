@@ -11,4 +11,4 @@ var Activity = new Schema({
     Timestamp: Date
 });
 
-module.exports = mongoose.model('Activity',Actvity);
+module.exports = mongoose.model('Activity',Activity);

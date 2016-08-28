@@ -12,7 +12,6 @@ var Scout = new Schema({
 	Password: String,
 	Position: String,
 	Team: String,
-	LeaderID: Number,
 	IsAdmin: Boolean,
 	IsYouth: Boolean,
 	IsElevated: Boolean,
