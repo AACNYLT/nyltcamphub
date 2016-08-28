@@ -203,7 +203,7 @@ apirouter.route('/evaluations/:objectid')
 		Evaluation.findOne({ EvalID: req.params.objectid }, function (err, eval) {
 			if (err)
 				res.send(err);
-			else
+			else 
 				res.json(eval);
 		});
 	})
@@ -243,8 +243,10 @@ apirouter.route('/interviews')
 		interview.save(function (err) {
             if (err)
                 res.send(err);
-            else
+            else {
+				logger.addActivity(interview.Interviewer, interview.ScoutID, "Interview", "POST", new Date(), null, interview);
 				res.json({ message: 'Interview created.' });
+			}
         });
 	});
 
@@ -261,8 +263,10 @@ apirouter.route('/interviews/:objectid')
 		Interview.update({ InterviewID: req.params.objectid }, req.body, { multi: false }, function (err) {
 			if (err)
 				res.send(err);
-			else
+			else {
+				logger.addActivity(req.body.Interviewer, req.body.ScoutID, "Interview", "PUT", new Date(), null, new Interview(req.body));
 				res.json({ message: 'Interview updated.' });
+			}
 		});
 	})
 	.delete(function (req, res) {
