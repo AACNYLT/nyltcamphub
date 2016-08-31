@@ -1,5 +1,5 @@
 {
-  "name": "NYLT_17",
+  "name": "nylt-camphub-server",
   "version": "1.2.1",
   "description": "NYLT CampHub Node Server",
   "main": "server.js",
