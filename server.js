@@ -37,6 +37,11 @@ app.route('/')
 		res.sendFile(path.join(__dirname,"/index.html"));
 	});
 
+app.route('/policy')
+	.get(function(req,res){
+		res.send("CampHub won't share any information transmitted through its app or stored on its servers, nor will that data be used for any other purpose beyond the services the app provides. The data will furthermore not be retained after it is deleted by the user.");
+	});
+
 app.route('/authenticate')
 	.get(function(req,res){
 		if (req.query.barcode) {
