@@ -7,12 +7,12 @@
         <div class="evaluation">
             <h3>Create Evaluation</h3>
             <input type="text" ng-disabled="isDayFinal()" placeholder="Day" ng-model="newEval.Day"></input> <br />
-            <b>knowledge:</b><select ng-disabled="isDayFinal()" ng-model="newEval.Knowledge" ng-options="o for o in ratingOptions"></select><br />
-            <b>skill:</b><select ng-disabled="isDayFinal()" ng-model="newEval.Skill" ng-options="o for o in ratingOptions"></select><br />
-            <b>confidence:</b><select ng-disabled="isDayFinal()" ng-model="newEval.Confidence" ng-options="o for o in ratingOptions"></select><br />
-            <b>motivation:</b><select ng-disabled="isDayFinal()" ng-model="newEval.Motivation" ng-options="o for o in ratingOptions"></select><br />
-            <b>enthusiasm:</b><select ng-disabled="isDayFinal()" ng-model="newEval.Enthusiasm" ng-options="o for o in ratingOptions"></select><br />
-            <b>recommendation:</b><select ng-model="newEval.Recommend" ng-options="o for o in recommendOptions"></select><br />
+            <div ng-if="!isDayFinal()"><b>knowledge:</b><select ng-model="newEval.Knowledge" ng-options="o for o in ratingOptions"></select><br /></div>
+            <div ng-if="!isDayFinal()"><b>skill:</b><select ng-model="newEval.Skill" ng-options="o for o in ratingOptions"></select><br /></div>
+            <div ng-if="!isDayFinal()"><b>confidence:</b><select ng-model="newEval.Confidence" ng-options="o for o in ratingOptions"></select><br /></div>
+            <div ng-if="!isDayFinal()"><b>motivation:</b><select ng-model="newEval.Motivation" ng-options="o for o in ratingOptions"></select><br /></div>
+            <div ng-if="!isDayFinal()"><b>enthusiasm:</b><select ng-model="newEval.Enthusiasm" ng-options="o for o in ratingOptions"></select><br /></div>
+            <b>recommendation:</b><select ng-model="newEval.Recommend" ng-options="o.value as o.name for o in recommendOptions"></select><br />
             <b>comments: </b><textarea ng-model="newEval.Comments"></textarea><br />
             <button ng-click="createEval()">Save</button>
         </div>
@@ -24,7 +24,7 @@
                 <b>confidence:</b><span class="staticStat"> {{e.Confidence}}</span><select class="editStat" ng-model="e.Confidence" ng-options="o for o in ratingOptions"></select><br />
                 <b>motivation:</b><span class="staticStat"> {{e.Motivation}}</span><select class="editStat" ng-model="e.Motivation" ng-options="o for o in ratingOptions"></select><br />
                 <b>enthusiasm:</b><span class="staticStat"> {{e.Enthusiasm}}</span><select class="editStat" ng-model="e.Enthusiasm" ng-options="o for o in ratingOptions"></select><br />
-                <b>recommendation:</b><span class="staticStat"> {{e.Recommend}}</span><select class="editStat" ng-model="e.Recommend" ng-options="o for o in recommendOptions"></select><br />
+                <b>recommendation:</b><span class="staticStat"> {{convertRecommendationNumber(e.Recommend)}}</span><select class="editStat" ng-model="e.Recommend" ng-options="o for o in recommendOptions"></select><br />
                 <b>comments: </b><span class="staticStat">{{e.Comments}}</span><textarea class="editStat" ng-model="e.Comments"></textarea><br />
                 <button ng-disabled="checkEditable(e.EvaluatorID)" class="staticStat" ng-click="editEval($index)">Edit</button><button ng-click="saveEval($index,e)" class="editStat">Save</button>
             </li>
