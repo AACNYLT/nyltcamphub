@@ -18,22 +18,22 @@ app.controller('indexController', function ($scope, $http) {
         Recommend: 0,
         Comments: ""
     };
-    $scope.resetEval = function() {
-            $scope.newEval = {
-        Day: "",
-        Knowledge: 0,
-        Skill: 0,
-        Confidence: 0,
-        Motivation: 0,
-        Enthusiasm: 0,
-        Recommend: 0,
-        Comments: ""
-    };
+    $scope.resetEval = function () {
+        $scope.newEval = {
+            Day: "",
+            Knowledge: 0,
+            Skill: 0,
+            Confidence: 0,
+            Motivation: 0,
+            Enthusiasm: 0,
+            Recommend: 0,
+            Comments: ""
+        };
     }
     $scope.ratingOptions = [1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
-    $scope.recommendOptions = [{name: 'No Recommendation', value: 1},
-                                {name: 'Partial Recommendation', value: 2},
-                                {name: 'Full Recommendation', value: 3}];
+    $scope.recommendOptions = [{ name: 'No Recommendation', value: 1 },
+    { name: 'Partial Recommendation', value: 2 },
+    { name: 'Full Recommendation', value: 3 }];
     $scope.CurrentUser = {};
     $scope.scouts = [];
     $scope.login = function () {
@@ -69,7 +69,13 @@ app.controller('indexController', function ($scope, $http) {
                     $('.modal').fadeIn('slow');
                     $('.scoutWindow').fadeIn('slow');
                     $scope.selectedScout = s;
-                    $scope.selectedScout.evaluations = response.data;
+                    if ($scope.CurrentUser.IsElevated) {
+                        $scope.selectedScout.evaluations = response.data;
+                    } else {
+                        $scope.selectedScout.evaluations = response.data.filter(function (val) {
+                            return val.EvaluatorID == $scope.CurrentUser.ScoutID;
+                        });
+                    }
                 } else {
                     alert('Could not get evaluations.');
                 }
@@ -129,16 +135,16 @@ app.controller('indexController', function ($scope, $http) {
             return false;
         }
     };
-    $scope.convertRecommendationNumber = function(number) {
+    $scope.convertRecommendationNumber = function (number) {
         switch (number) {
             case 1:
-            return 'No Recommendation';
+                return 'No Recommendation';
             case 2:
-            return 'Partial Recommendation';
+                return 'Partial Recommendation';
             case 3:
-            return 'Full Recommendation';
+                return 'Full Recommendation';
             default:
-            return 'Select One'
+                return 'Select One'
         }
     }
 });
