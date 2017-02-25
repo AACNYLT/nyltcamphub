@@ -22,7 +22,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 static var compatInfo = {
-	serverVersion: "1.2.1",
+	serverVersion: {
+		major: 1,
+		minor: 2,
+		rev: 1
+	},
 	minClientVersion: {
 		major: 3,
 		minor: 6
