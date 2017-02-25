@@ -21,6 +21,14 @@ mongoose.connect('mongodb://api:camphub@ds030719.mlab.com:30719/CampHub_DB');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+static var compatInfo = {
+	serverVersion: "1.2.1",
+	minClientVersion: {
+		major: 3,
+		minor: 6
+	}
+};
+
 /*passport.use(new BasicStrategy(
   function(username, password, done) {
     Scout.findOne({ Username: username }, function (err, user) {
@@ -33,27 +41,32 @@ app.use(bodyParser.json());
 ));*/
 
 app.route('/')
-	.get(function(req,res){
-		res.sendFile(path.join(__dirname,"/index.html"));
+	.get(function (req, res) {
+		res.sendFile(path.join(__dirname, "/index.html"));
 	});
 
 app.route('/policy')
-	.get(function(req,res){
+	.get(function (req, res) {
 		res.send("CampHub won't share any information transmitted through its app or stored on its servers, nor will that data be used for any other purpose beyond the services the app provides. The data will furthermore not be retained after it is deleted by the user.");
 	});
 
+app.route('/id')
+	.get(function (req, res) {
+		res.json(compatInfo);
+	});
+
 app.route('/authenticate')
-	.get(function(req,res){
+	.get(function (req, res) {
 		if (req.query.barcode) {
-			Scout.findOne({$or: [{BSAID: req.query.barcode},{ScoutID: req.query.barcode}]}).exec(function(err,scoutlist){
+			Scout.findOne({ $or: [{ BSAID: req.query.barcode }, { ScoutID: req.query.barcode }] }).exec(function (err, scoutlist) {
 				if (err)
 					res.send(err);
 				else
 					res.json(scoutlist);
 			});
 		} else if (req.query.username) {
-			Scout.findOne({$and: [{Username: req.query.username}, {Password: req.query.password}]}).exec(function(err,scoutlist){
-				if(err)
+			Scout.findOne({ $and: [{ Username: req.query.username }, { Password: req.query.password }] }).exec(function (err, scoutlist) {
+				if (err)
 					res.send(err);
 				else
 					res.json(scoutlist);
