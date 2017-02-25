@@ -21,7 +21,7 @@ mongoose.connect('mongodb://api:camphub@ds030719.mlab.com:30719/CampHub_DB');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-static var compatInfo = {
+var compatInfo = {
 	serverVersion: 1.2,
 	minClientVersion: 3.6
 };
