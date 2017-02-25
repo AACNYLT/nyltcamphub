@@ -22,15 +22,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 static var compatInfo = {
-	serverVersion: {
-		major: 1,
-		minor: 2,
-		rev: 1
-	},
-	minClientVersion: {
-		major: 3,
-		minor: 6
-	}
+	serverVersion: 1.2,
+	minClientVersion: 3.6
 };
 
 /*passport.use(new BasicStrategy(
