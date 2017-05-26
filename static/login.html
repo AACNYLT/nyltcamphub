@@ -1,6 +1,11 @@
 <div style="text-align: center;">
-    <span class="chHeader"><h1>welcome</h1><h2>please log in</h2></span>
-    <input class="loginInput" placeholder="username" type="text" ng-model="loginPage.username" /> <br />
-    <input class="loginInput" placeholder="password" type="password" ng-model="loginPage.password"/> <br />
-    <button class="chButton" ng-click="login()">Log In</button>
+    <div class="chHeader">
+        <h1 class="header">welcome</h1>
+        <h1 class="subheader">please log in</h1>
+    </div>
+    <div class="loginContainer">
+        <input class="loginInput" placeholder="username" type="text" ng-model="loginPage.username" /> <br />
+        <input class="loginInput" placeholder="password" type="password" ng-model="loginPage.password" /> <br />
+        <button class="chButton" ng-click="login()">Log In</button>
+    </div>
 </div>

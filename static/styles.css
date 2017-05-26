@@ -1,9 +1,36 @@
 body{
    font-family: 'Open Sans', sans-serif; 
 }
+.subheader {
+    margin-right: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 10px;
+    opacity: .6;
+}
+.header {
+    margin: 0px;
+}
+.chHeader h1 {
+    font-weight: 400;
+    display: inline-block;
+}
+.loginContainer {
+    margin-top: 20px;
+}
+.loginInput {
+    max-width: 300px;
+    width: 100%;
+    font-size: 18px;
+    border: none;
+    border-bottom: 1px solid black;
+    margin-bottom: 20px;
+}
 .chButton{   
     background: lightgrey;
     border: 1px solid grey;
+    width: 100%;
+    max-width: 300px;
 }
 .scoutItem{
     list-style: none;
@@ -14,11 +41,6 @@ body{
 img.scoutItemChild{
     width: 75px;
     height: 75px;
-}
-.loginInput {
-    max-width: 300px;
-    border: none;
-    border-bottom: 1px solid black;
 }
 .scoutWindow {
     display: none;
