@@ -21,10 +21,12 @@ body{
 .loginInput {
     max-width: 300px;
     width: 100%;
+    margin-bottom: 20px;
+}
+.chInput {
     font-size: 18px;
     border: none;
     border-bottom: 1px solid black;
-    margin-bottom: 20px;
 }
 .chButton{   
     background: lightgrey;
@@ -32,16 +34,55 @@ body{
     width: 100%;
     max-width: 300px;
 }
+.mainHeader {
+    position: fixed;
+    top:0px;
+    width: 100%;
+    padding-top: 10px;
+    background-color: white;
+    padding-bottom: 10px;
+    margin: 0px;
+}
+.mainHeader input {
+    display: inline-block;
+    float: right;
+    margin-right: 10px;
+    margin-top: 10px;
+}
+.mainHeader h1 {
+    display: inline-block;
+    margin: 0px;
+    float: left;
+}
+.scoutList {
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-top:64px;
+}
 .scoutItem{
     list-style: none;
+    height: 75px;
+    cursor: pointer;
+    margin-top: 15px;
+    margin-bottom: 15px;
 }
 .scoutItemChild{
     display: inline-block;
+    vertical-align: middle;
 }
 img.scoutItemChild{
     width: 75px;
     height: 75px;
 }
+div.scoutItemChild {
+    margin-left: 10px;
+    height: 75px;
+}
+.scoutItemChild h3 {
+    margin: 0px;
+    vertical-align: top;
+}
+
 .scoutWindow {
     display: none;
     position: fixed;

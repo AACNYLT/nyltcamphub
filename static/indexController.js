@@ -31,9 +31,9 @@ app.controller('indexController', function ($scope, $http) {
         };
     }
     $scope.ratingOptions = [1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
-    $scope.recommendOptions = [{ name: 'No Recommendation', value: 1 },
-    { name: 'Partial Recommendation', value: 2 },
-    { name: 'Full Recommendation', value: 3 }];
+    $scope.recommendOptions = [{ name: 'No', value: 1 },
+    { name: 'Maybe', value: 2 },
+    { name: 'Yes', value: 3 }];
     $scope.CurrentUser = {};
     $scope.scouts = [];
     $scope.login = function () {
@@ -138,11 +138,11 @@ app.controller('indexController', function ($scope, $http) {
     $scope.convertRecommendationNumber = function (number) {
         switch (number) {
             case 1:
-                return 'No Recommendation';
+                return 'No';
             case 2:
-                return 'Partial Recommendation';
+                return 'Maybe';
             case 3:
-                return 'Full Recommendation';
+                return 'Yes';
             default:
                 return 'Select One'
         }
