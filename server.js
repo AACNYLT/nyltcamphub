@@ -1,27 +1,27 @@
-var express = require('express');
-var path = require('path');
-var mongoose = require('mongoose');
-var bodyParser = require('body-parser');
-var fs = require('fs');
-var multer = require('multer');
-var passport = require('passport');
-var BasicStrategy = require('passport-http');
+const express = require('express');
+const path = require('path');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const fs = require('fs');
+const multer = require('multer');
+const passport = require('passport');
+const BasicStrategy = require('passport-http');
 
-var Scout = require('./scout.js');
-var Evaluation = require('./evaluation.js');
-var Interview = require('./interview.js');
-var Course = require('./course.js');
+const Scout = require('./scout.js');
+const Evaluation = require('./evaluation.js');
+const Interview = require('./interview.js');
+const Course = require('./course.js');
 
-var apirouter = require('./api.js');
+const apirouter = require('./api.js');
 
-var app = express();
+const app = express();
 
 mongoose.connect('mongodb://api:camphub@ds030719.mlab.com:30719/CampHub_DB');
 //mongoose.connect('mongodb://localhost:27017');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-var compatInfo = {
+let compatInfo = {
 	serverVersion: 1.2,
 	minClientVersion: 3.6
 };
