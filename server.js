@@ -16,7 +16,7 @@ var apirouter = require('./api.js');
 
 var app = express();
 
-mongoose.connect('mongodb://api:camphub@ds030719.mlab.com:30719/CampHub_DB');
+mongoose.connect(process.env.DB_URL);
 //mongoose.connect('mongodb://localhost:27017');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
