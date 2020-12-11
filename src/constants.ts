@@ -3,4 +3,4 @@ export const compatInfo = {
     minClientVersion: 4.0
 };
 
-export const DB_URL = `some url`;
+export const DB_URL: string = process.env.DB_URL ?? '';
