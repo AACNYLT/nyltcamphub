@@ -1,47 +1,47 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import exp from 'constants';
 
 export interface IScout extends Document {
-    FirstName: string,
-    LastName: string,
-    Gender: string,
-    DateOfBirth: string,
-    ScoutID: number,
-    BSAID: number,
-    Username: string,
-    Password: string,
-    Position: string,
-    Team: string,
-    IsAdmin: boolean,
-    IsYouth: boolean,
-    IsElevated: boolean,
-    IsStaff: boolean,
-    CourseName: string,
-    CourseID: number,
-    LastModified: Date,
-    Created: Date
+    firstName: string,
+    lastName: string,
+    gender: string,
+    dateOfBirth: string,
+    bsaId: number,
+    position: string,
+    team: string,
+    isAdmin: boolean,
+    isYouth: boolean,
+    isElevated: boolean,
+    isStaff: boolean,
+    course: ICourse['_id'],
+    evaluationsAsAuthor: [IEvaluation['_id']],
+    evaluationsAsSubject: [IEvaluation['_id']]
 }
 
 const ScoutSchema: Schema = new Schema({
-    FirstName: String,
-    LastName: String,
-    Gender: String,
-    DateOfBirth: String,
-    ScoutID: Number,
-    BSAID: Number,
-    Username: String,
-    Password: String,
-    Position: String,
-    Team: String,
-    IsAdmin: Boolean,
-    IsYouth: Boolean,
-    IsElevated: Boolean,
-    IsStaff: Boolean,
-    CourseName: String,
-    CourseID: Number,
-    LastModified: Date,
-    Created: Date
-});
+    firstName: String,
+    lastName: String,
+    gender: String,
+    dateOfBirth: Date,
+    bsaId: Number,
+    position: String,
+    team: String,
+    isAdmin: Boolean,
+    isYouth: Boolean,
+    isElevated: Boolean,
+    isStaff: Boolean,
+    course: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Course'
+    },
+    evaluationsAsAuthor: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Evaluation'
+    }],
+    evaluationsAsSubject: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Evaluation'
+    }],
+}, {timestamps: true});
 
 const Scout = mongoose.model<IScout>('Scout', ScoutSchema)
 
@@ -99,7 +99,7 @@ const CourseSchema: Schema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Scout'
     }]
-});
+}, {timestamps: true});
 
 const Course = mongoose.model<ICourse>('Course', CourseSchema);
 
