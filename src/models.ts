@@ -3,13 +3,11 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IScout extends Document {
     firstName: string,
     lastName: string,
-    gender: string,
     dateOfBirth: string,
     position: string,
     team: string,
-    isAdmin: boolean,
-    isElevated: boolean,
-    isStaff: boolean,
+    permissionLevel: number,
+    imageUrl: string,
     course: ICourse['_id'],
     evaluationsAsAuthor: [IEvaluation['_id']],
     evaluationsAsSubject: [IEvaluation['_id']]
@@ -18,13 +16,11 @@ export interface IScout extends Document {
 const ScoutSchema: Schema = new Schema({
     firstName: String,
     lastName: String,
-    gender: String,
     dateOfBirth: Date,
     position: String,
     team: String,
-    isAdmin: Boolean,
-    isElevated: Boolean,
-    isStaff: Boolean,
+    permissionLevel: Number,
+    imageUrl: String,
     course: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Course'
