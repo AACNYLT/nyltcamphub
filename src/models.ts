@@ -5,11 +5,9 @@ export interface IScout extends Document {
     lastName: string,
     gender: string,
     dateOfBirth: string,
-    bsaId: number,
     position: string,
     team: string,
     isAdmin: boolean,
-    isYouth: boolean,
     isElevated: boolean,
     isStaff: boolean,
     course: ICourse['_id'],
@@ -22,11 +20,9 @@ const ScoutSchema: Schema = new Schema({
     lastName: String,
     gender: String,
     dateOfBirth: Date,
-    bsaId: Number,
     position: String,
     team: String,
     isAdmin: Boolean,
-    isYouth: Boolean,
     isElevated: Boolean,
     isStaff: Boolean,
     course: {
@@ -104,3 +100,8 @@ const CourseSchema: Schema = new Schema({
 const Course = mongoose.model<ICourse>('Course', CourseSchema);
 
 export { Scout, Evaluation, Course };
+
+export enum ScoutType {
+    Staff,
+    Participant
+}
