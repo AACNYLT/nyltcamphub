@@ -4,3 +4,5 @@ export const compatInfo = {
 };
 
 export const DB_URL: string = process.env.DB_URL ?? '';
+
+export const SECRET: string = process.env.SECRET ?? '';

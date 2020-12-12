@@ -2,22 +2,70 @@ import express from 'express';
 import {
     createCourse,
     createEvaluation,
-    createScout, deleteCourse, deleteEvaluation, deleteScout,
-    getAllCourses,
-    getCourse,
-    getScout,
+    createScout,
+    deleteCourse,
+    deleteEvaluation,
+    deleteScout,
     getScoutWithAuthoredEvaluations,
     getScoutWithCourse,
-    getScoutWithTheirEvaluations, updateCourse, updateEvaluation, updateScout
-} from './controllers';
+    updateCourse,
+    updateEvaluation,
+    updateScout
+} from './database.controllers';
 import { ScoutType } from './models';
+import { checkPermission, createTokenForUser, getEvaluationsForScout, getUserIdFromToken } from './route.controllers';
 
 const router = express.Router();
 
+router.post('/login', async (req, res) => {
+    try {
+        const token = await createTokenForUser(req.body.name, req.body.dateOfBirth);
+        if (token) {
+            res.send(token);
+        } else {
+            res.sendStatus(401);
+        }
+    } catch (e) {
+        console.error(e);
+        res.sendStatus(500);
+    }
+});
+
+router.use((req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1] ?? '';
+    try {
+        const userId = getUserIdFromToken(token);
+        if (userId) {
+            // @ts-ignore
+            req.userId = userId;
+            next();
+        } else {
+            res.sendStatus(401);
+        }
+    } catch {
+        res.sendStatus(401);
+    }
+});
+
+
+router.get('/scout', async (req: any, res) => {
+    try {
+        const scout = await getScoutWithAuthoredEvaluations(req.userId);
+        if (scout !== null) {
+            res.json(scout);
+        } else {
+            res.status(404).send('Scout not found');
+        }
+    } catch (e) {
+        console.error(e);
+        res.sendStatus(500);
+    }
+});
+
 router.route('/scout/:scoutId')
-    .get(async (req, res) => {
+    .get(async (req: any, res) => {
         try {
-            const scout = await getScout(req.params.scoutId);
+            const scout = await getEvaluationsForScout(req.params.scoutId, req.userId);
             if (scout !== null) {
                 res.json(scout);
             } else {
@@ -28,56 +76,36 @@ router.route('/scout/:scoutId')
             res.sendStatus(500);
         }
     })
-    .put(async (req, res) => {
+    .put(async (req: any, res) => {
         try {
-            const scout = await updateScout(req.params.scoutId, req.body);
-            if (scout !== null) {
-                res.json(scout);
+            if (await checkPermission(req.userId, 4)) {
+                const scout = await updateScout(req.params.scoutId, req.body);
+                if (scout !== null) {
+                    res.json(scout);
+                } else {
+                    res.status(404).send('Scout not found');
+                }
             } else {
-                res.status(404).send('Scout not found');
+                res.sendStatus(401);
             }
         } catch (e) {
             console.error(e);
             res.sendStatus(500);
         }
     })
-    .delete(async (req, res) => {
+    .delete(async (req: any, res) => {
         try {
-            await deleteScout(req.params.scoutId);
-            res.sendStatus(200);
+            if (await checkPermission(req.userId, 4)) {
+                await deleteScout(req.params.scoutId);
+                res.sendStatus(200);
+            } else {
+                res.sendStatus(401);
+            }
         } catch (e) {
             console.error(e);
             res.sendStatus(500);
         }
     })
-
-router.get('/scout/:scoutId/course', async (req, res) => {
-    try {
-        const scout = await getScoutWithCourse(req.params.scoutId);
-        if (scout !== null) {
-            res.json(scout);
-        } else {
-            res.status(404).send('Scout not found');
-        }
-    } catch (e) {
-        console.error(e);
-        res.sendStatus(500);
-    }
-});
-
-router.get('/scout/:scoutId/evaluations/author', async (req, res) => {
-    try {
-        const scout = await getScoutWithAuthoredEvaluations(req.params.scoutId);
-        if (scout !== null) {
-            res.json(scout);
-        } else {
-            res.status(404).send('Scout not found');
-        }
-    } catch (e) {
-        console.error(e);
-        res.sendStatus(500);
-    }
-});
 
 router.post('/scout/:scoutId/evaluations/author/:authorId', async (req, res) => {
     try {
@@ -88,32 +116,27 @@ router.post('/scout/:scoutId/evaluations/author/:authorId', async (req, res) => 
     }
 });
 
-router.get('/scout/:scoutId/evaluations', async (req, res) => {
-    try {
-        const scout = await getScoutWithTheirEvaluations(req.params.scoutId);
-        if (scout !== null) {
-            res.json(scout);
-        } else {
-            res.status(404).send('Scout not found');
-        }
-    } catch (e) {
-        console.error(e);
-        res.sendStatus(500);
-    }
-});
-
 router.route('/course')
-    .get(async (req, res) => {
+    .get(async (req: any, res) => {
         try {
-            res.json(await getAllCourses());
+            const scout = await getScoutWithCourse(req.userId);
+            if (scout !== null) {
+                res.json(scout);
+            } else {
+                res.status(404).send('Scout not found');
+            }
         } catch (e) {
             console.error(e);
             res.sendStatus(500);
         }
     })
-    .post(async (req, res) => {
+    .post(async (req: any, res) => {
         try {
-            res.json(await createCourse(req.body));
+            if (await checkPermission(req.userId, 4)) {
+                res.json(await createCourse(req.body));
+            } else {
+                res.sendStatus(401);
+            }
         } catch (e) {
             console.error(e);
             res.sendStatus(500);
@@ -121,36 +144,29 @@ router.route('/course')
     });
 
 router.route('/course/:courseId')
-    .get(async (req, res) => {
+    .put(async (req: any, res) => {
         try {
-            const course = await getCourse(req.params.courseId);
-            if (course !== null) {
-                res.json(course);
+            if (await checkPermission(req.userId, 4)) {
+                const course = await updateCourse(req.params.courseId, req.body);
+                if (course !== null) {
+                    res.json(course);
+                } else {
+                    res.status(404).send('Course not found');
+                }
             } else {
-                res.status(404).send('Course not found');
+                res.sendStatus(401);
             }
         } catch (e) {
             console.error(e);
             res.sendStatus(500);
         }
     })
-    .put(async (req, res) => {
+    .delete(async (req: any, res) => {
         try {
-            const course = await updateCourse(req.params.courseId, req.body);
-            if (course !== null) {
-                res.json(course);
-            } else {
-                res.status(404).send('Course not found');
+            if (await checkPermission(req.userId, 4)) {
+                await deleteCourse(req.params.courseId);
+                res.sendStatus(200);
             }
-        } catch (e) {
-            console.error(e);
-            res.sendStatus(500);
-        }
-    })
-    .delete(async (req, res) => {
-        try {
-            await deleteCourse(req.params.courseId);
-            res.sendStatus(200);
         } catch (e) {
             console.error(e);
             res.sendStatus(500);

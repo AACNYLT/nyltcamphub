@@ -3,7 +3,8 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IScout extends Document {
     firstName: string,
     lastName: string,
-    dateOfBirth: string,
+    queryName: string,
+    dateOfBirth: Date,
     position: string,
     team: string,
     permissionLevel: number,
@@ -16,6 +17,7 @@ export interface IScout extends Document {
 const ScoutSchema: Schema = new Schema({
     firstName: String,
     lastName: String,
+    queryName: String,
     dateOfBirth: Date,
     position: String,
     team: String,

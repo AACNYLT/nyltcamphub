@@ -1,4 +1,5 @@
 import { Course, Evaluation, ICourse, IEvaluation, IScout, Scout, ScoutType } from './models';
+import { query } from 'express';
 
 export async function getScoutWithCourse(scoutId: string): Promise<IScout | null> {
     return await Scout.findById(scoutId).populate({
@@ -80,6 +81,10 @@ export async function getScout(scoutId: string): Promise<IScout | null> {
     return await Scout.findById(scoutId).exec();
 }
 
+export async function findScoutByNameAndBirthday(queryName: string, dateOfBirth: Date): Promise<IScout | null> {
+    return await Scout.findOne({queryName: queryName, dateOfBirth: dateOfBirth}).exec();
+}
+
 export async function getCourse(courseId: string): Promise<ICourse | null> {
     return await Course.findById(courseId).exec();
 }
@@ -108,6 +113,7 @@ export async function createEvaluation(authorId: string, subjectId: string, eval
 
 export async function createScout(scoutJson: any, courseId: string, scoutType: ScoutType): Promise<IScout> {
     scoutJson.course = courseId;
+    scoutJson.queryName = createQueryName(scoutJson.firstName, scoutJson.lastName);
     const scout = new Scout(scoutJson);
     const course = await getCourse(courseId);
     switch (scoutType) {
@@ -121,6 +127,11 @@ export async function createScout(scoutJson: any, courseId: string, scoutType: S
     await scout.save();
     await course?.save();
     return scout;
+}
+
+function createQueryName(firstName: string, lastName: string): string {
+    const queryName = firstName.toLowerCase() + lastName.toLowerCase();
+    return queryName.trim().replace(' ', '');
 }
 
 export async function createCourse(courseJson: any): Promise<ICourse> {
@@ -209,6 +220,7 @@ export async function updateScout(scoutId: string, scoutJson: any): Promise<ISco
     if (scout) {
         scout.firstName = scoutJson.firstName ?? scout.firstName;
         scout.lastName = scoutJson.lastName ?? scout.lastName
+        scout.queryName = createQueryName(scout.firstName, scout.lastName);
         scout.dateOfBirth = scoutJson.dateOfBirth ?? scout.dateOfBirth;
         scout.position = scoutJson.position ?? scout.position;
         scout.team = scoutJson.team ?? scout.team;
