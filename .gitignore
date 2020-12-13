@@ -5,3 +5,4 @@ npm-debug.log
 /build
 .DS_Store
 /static/node_modules
+/static/.idea
