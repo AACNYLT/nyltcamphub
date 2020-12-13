@@ -3,3 +3,5 @@ npm-debug.log
 /.idea
 /node_modules
 /build
+.DS_Store
+/static/node_modules
