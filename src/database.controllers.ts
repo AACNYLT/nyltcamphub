@@ -1,5 +1,6 @@
 import { Course, Evaluation, ICourse, IEvaluation, IScout, Scout, ScoutType } from './models';
 import { query } from 'express';
+import { createQueryName } from './utils';
 
 export async function getScoutWithCourse(scoutId: string): Promise<IScout | null> {
     return await Scout.findById(scoutId).populate({
@@ -127,11 +128,6 @@ export async function createScout(scoutJson: any, courseId: string, scoutType: S
     await scout.save();
     await course?.save();
     return scout;
-}
-
-function createQueryName(firstName: string, lastName: string): string {
-    const queryName = firstName.toLowerCase() + lastName.toLowerCase();
-    return queryName.trim().replace(' ', '');
 }
 
 export async function createCourse(courseJson: any): Promise<ICourse> {

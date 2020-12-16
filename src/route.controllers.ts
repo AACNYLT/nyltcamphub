@@ -2,6 +2,7 @@ import { IScout } from './models';
 import { findScoutByNameAndBirthday, getScout, getScoutWithTheirEvaluations } from './database.controllers';
 import jwt from 'jsonwebtoken';
 import { SECRET } from './constants';
+import { createDate, createQueryName } from './utils';
 
 export async function getEvaluationsForScout(scoutId: string, userId: string): Promise<IScout | null> {
     const scout = await getScoutWithTheirEvaluations(scoutId);
@@ -39,8 +40,8 @@ export async function checkPermission(userId: string, minimumPermissionRequired:
     }
 }
 
-export async function createTokenForUser(name: string, dateOfBirthString: string): Promise<string | null> {
-    const user = await findScoutByNameAndBirthday(name, new Date(dateOfBirthString));
+export async function createTokenForUser(firstName: string, lastName: string, dateOfBirthString: string): Promise<string | null> {
+    const user = await findScoutByNameAndBirthday(createQueryName(firstName, lastName), createDate(dateOfBirthString));
     if (user) {
         return jwt.sign({userId: user._id}, SECRET);
     } else {

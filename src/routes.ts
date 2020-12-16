@@ -19,7 +19,7 @@ const router = express.Router();
 
 router.post('/login', async (req, res) => {
     try {
-        const token = await createTokenForUser(req.body.name, req.body.dateOfBirth);
+        const token = await createTokenForUser(req.body.firstName, req.body.lastName, req.body.dateOfBirth);
         if (token) {
             res.send(token);
         } else {
