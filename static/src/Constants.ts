@@ -1,4 +1,5 @@
-export const LOG_IN_URL = `${process.env.REACT_APP_ENVIRONMENT === 'development' ? 'http://localhost' : ''}/api/login`
+export const LOG_IN_URL = `${process.env.REACT_APP_ENVIRONMENT === 'development' ? 'http://localhost' : ''}/api/login`;
+export const COURSE_URL = `${process.env.REACT_APP_ENVIRONMENT === 'development' ? 'http://localhost' : ''}/api/course`;
 
 export enum Screen {
     LOGIN,
@@ -7,5 +8,6 @@ export enum Screen {
 
 export const ERROR_MESSAGES = {
     LOGIN_NOT_FOUND: 'We don\'t recognize that first name + last name + date of birth combination. Please make sure you entered it correctly - if you did, you may not be in the system.',
-    LOGIN_ERROR: 'We weren\'t able to log you in. Please check your internet connection.'
+    LOGIN_ERROR: 'We weren\'t able to log you in. Please check your internet connection.',
+    LOAD_COURSE_ERROR: 'Error logging in. Please refresh the app and try again.'
 }

@@ -10,7 +10,7 @@ export default function LoginComponent(props: any) {
         try {
             const token = await getTokenForUser(formUser);
             if (token) {
-                props.logIn(token);
+                props.onLogIn(token);
             } else {
                 alert(ERROR_MESSAGES.LOGIN_NOT_FOUND);
             }

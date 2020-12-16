@@ -7,6 +7,15 @@
   pointer-events: none;
 }
 
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+.ant-list-item {
+  cursor: pointer;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
