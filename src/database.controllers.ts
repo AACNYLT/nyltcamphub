@@ -98,6 +98,17 @@ export async function getAllCourses(): Promise<ICourse[]> {
     return await Course.find({}).populate('participants').populate('staff').exec();
 }
 
+export async function getEvaluations(): Promise<IEvaluation[]> {
+    return await Evaluation.find({}).populate({
+        path: 'author',
+        model: 'Scout',
+        populate: {
+            path: 'course',
+            model: 'Course'
+        }
+    }).populate('scout').exec();
+}
+
 export async function createEvaluation(authorId: string, subjectId: string, evaluationJson: any): Promise<IScout | null> {
     evaluationJson.scout = subjectId;
     evaluationJson.author = authorId;
@@ -128,6 +139,14 @@ export async function createScout(scoutJson: any, courseId: string, scoutType: S
     await scout.save();
     await course?.save();
     return scout;
+}
+
+export async function createArrayOfScouts(scoutJsonArray: any[], courseId: string, scoutType: ScoutType): Promise<IScout[]> {
+    const resultArray = [];
+    for (let i = 0; i < scoutJsonArray.length; i++) {
+        resultArray.push(await createScout(scoutJsonArray[i], courseId, scoutType));
+    }
+    return resultArray;
 }
 
 export async function createCourse(courseJson: any): Promise<ICourse> {

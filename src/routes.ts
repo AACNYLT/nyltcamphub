@@ -5,7 +5,7 @@ import {
     createScout,
     deleteCourse,
     deleteEvaluation,
-    deleteScout,
+    deleteScout, getScout,
     getScoutWithAuthoredEvaluations,
     getScoutWithCourse,
     updateCourse,
@@ -13,9 +13,18 @@ import {
     updateScout
 } from './database.controllers';
 import { ScoutType } from './models';
-import { checkPermission, createTokenForUser, getEvaluationsForScout, getUserIdFromToken } from './route.controllers';
+import multer from 'multer';
+import {
+    checkPermission,
+    createTokenForUser,
+    getEvaluationsForScout,
+    getUserIdFromToken,
+    processCsv
+} from './route.controllers';
+import { ADMIN_PERMISSION_LEVEL } from './constants';
 
 const router = express.Router();
+const upload = multer({dest: '/csv-temp'});
 
 router.post('/login', async (req, res) => {
     try {
@@ -47,6 +56,41 @@ router.use((req, res, next) => {
     }
 });
 
+router.route('/data')
+    .post(upload.single('file'), async (req: any, res) => {
+        if (req.body.courseId) {
+            try {
+                const scout = await getScout(req.userId);
+                if (scout && scout.permissionLevel >= ADMIN_PERMISSION_LEVEL) {
+                    res.json(await processCsv(req.file, req.body.courseId));
+                } else {
+                    res.status(401);
+                }
+            } catch (e) {
+                console.error(e);
+                res.sendStatus(500);
+            }
+        } else {
+            res.status(400).send('courseId body param needed');
+        }
+    })
+    .get(async (req: any, res) => {
+        try {
+            const scout = await getScout(req.userId);
+            if (scout && scout.permissionLevel >= ADMIN_PERMISSION_LEVEL) {
+                res.json(await processCsv(req.file, req.body.courseId));
+            } else {
+                res.status(401);
+            }
+        } catch (e) {
+            console.error(e);
+            res.sendStatus(500);
+        }
+    });
+
+router.get('/template', (req, res) => {
+    res.sendFile('../media/CampHubTemplate.csv');
+});
 
 router.get('/scout', async (req: any, res) => {
     try {

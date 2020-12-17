@@ -1,0 +1,6 @@
+﻿First Name,Last Name,Date of Birth,Position,Team,Permission Level,Scout Type
+string,string,date,string,string,number,string
+as it appears on nametag,,,,,1 - participant,"must be ""Staff"" or ""Participant"", no quotes"
+,,,,,2 - staff,
+,,,,,3 - SM or SPL,
+,,,,,4 - system admin,
