@@ -15,7 +15,7 @@ import {
 import { ScoutType } from './models';
 import multer from 'multer';
 import {
-    checkPermission,
+    checkPermission, createEvaluationCsv,
     createTokenForUser,
     getEvaluationsForScout,
     getUserIdFromToken,
@@ -78,7 +78,8 @@ router.route('/data')
         try {
             const scout = await getScout(req.userId);
             if (scout && scout.permissionLevel >= ADMIN_PERMISSION_LEVEL) {
-                res.json(await processCsv(req.file, req.body.courseId));
+                res.type('csv');
+                res.send(await createEvaluationCsv());
             } else {
                 res.status(401);
             }

@@ -10,6 +10,7 @@ import { SECRET, SENIOR_STAFF_PERMISSION_LEVEL } from './constants';
 import { createDate, createQueryName, recommendationNumbertoString } from './utils';
 import csv from 'csvtojson/index';
 import exp from 'constants';
+import { json2csvAsync } from 'json-2-csv';
 
 export async function getEvaluationsForScout(scoutId: string, userId: string): Promise<IScout | null> {
     const scout = await getScoutWithTheirEvaluations(scoutId);
@@ -52,8 +53,9 @@ export async function processCsv(file: Express.Multer.File, courseId: string) {
         ...(await createArrayOfScouts(staffArray, courseId, ScoutType.Staff))];
 }
 
-export async function createEvaluationCsv() {
+export async function createEvaluationCsv(): Promise<String> {
     const evaluationJson = await createFlatEvaluationJson();
+    return await json2csvAsync(evaluationJson);
 }
 
 async function createFlatEvaluationJson(): Promise<any[]> {
