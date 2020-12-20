@@ -1,4 +1,4 @@
-import { IScout, ScoutType } from './models';
+import { IEvaluation, IScout, ScoutType } from './models';
 import {
     createArrayOfScouts,
     findScoutByNameAndBirthday,
@@ -8,9 +8,10 @@ import {
 } from './database.controllers';
 import jwt from 'jsonwebtoken';
 import { SECRET, SENIOR_STAFF_PERMISSION_LEVEL } from './constants';
-import { createDate, createQueryName, recommendationNumbertoString } from './utils';
+import { createDate, createQueryName } from './utils';
 import csv from 'csvtojson/index';
 import { json2csvAsync } from 'json-2-csv';
+import { recommendationNumberToString } from '../static/src/SharedUtils';
 
 export async function getEvaluationsForScout(scoutId: string, userId: string): Promise<IScout | null> {
     const scout = await getScoutWithTheirEvaluations(scoutId);
@@ -21,9 +22,9 @@ export async function getEvaluationsForScout(scoutId: string, userId: string): P
     return null;
 }
 
-function filterEvaluations(scout: IScout, viewerId: string): IScout {
+export function filterEvaluations(scout: IScout, viewerId: string): IScout {
     // @ts-ignore
-    scout.evaluationsAsSubject = scout.evaluationsAsSubject.filter(evaluation => evaluation.author._id === viewerId);
+    scout.evaluationsAsSubject = scout.evaluationsAsSubject.filter((evaluation: IEvaluation) => evaluation.author._id.toString() === viewerId);
     return scout;
 }
 
@@ -33,7 +34,7 @@ export async function processCsv(file: Express.Multer.File, courseId: string) {
         return {
             firstName: row['First Name'],
             lastName: row['Last Name'],
-            dateOfBirth: row['Date of Birth'],
+            dateOfBirth: createDate(row['Date of Birth']),
             position: row['Position'],
             team: row['Team'],
             permissionLevel: row['Permission Level']
@@ -73,16 +74,15 @@ async function createFlatEvaluationJson(): Promise<any[]> {
             'Author Date of Birth': evaluation.author.dateOfBirth,
             'Author Position': evaluation.author.position,
             'Day': evaluation.day,
-            'IsFinal': evaluation.isFinal,
             'Knowledge': evaluation.knowledge,
             'Skill': evaluation.skill,
             'Confidence': evaluation.confidence,
             'Motivation': evaluation.motivation,
             'Enthusiasm': evaluation.enthusiasm,
-            'Recommended for Staff': recommendationNumbertoString(evaluation.recommend),
-        // @ts-ignore
+            'Recommended for Staff': recommendationNumberToString(evaluation.recommend),
+            // @ts-ignore
             'Created': evaluation.createdAt,
-        // @ts-ignore
+            // @ts-ignore
             'Updated': evaluation.updatedAt
         }
     });

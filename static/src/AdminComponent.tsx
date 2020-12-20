@@ -68,7 +68,8 @@ export default class AdminComponent extends React.Component<any, any> {
                 <Select className="dropdown" onChange={this.onChangeCourseDropdown}>
                     {this.populateCourseDropdown()}
                 </Select>
-                <Upload name='file' action={`${DATA_UPLOAD_URL}/${this.state.selectedCourse}`}
+                <Upload name='file' disabled={!this.state.selectedCourse}
+                        action={`${DATA_UPLOAD_URL}/${this.state.selectedCourse}`}
                         headers={{authorization: `Bearer ${this.props.token}`}}
                         onChange={this.onChangeFileUploadStatus}><Button
                     icon={<UploadOutlined/>}>Upload CSV</Button></Upload>
@@ -85,6 +86,9 @@ export default class AdminComponent extends React.Component<any, any> {
                               <List.Item.Meta title={course.unitName} description={course.startDate}/>
                           </List.Item>
                       }}/>
+                      <Button>Add Course</Button>
+                <Divider>Manage Data</Divider>
+                <Button>Download Evaluations</Button>
             </div>
         )
     }

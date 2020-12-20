@@ -18,7 +18,7 @@ import multer from 'multer';
 import {
     checkPermission,
     createEvaluationCsv,
-    createTokenForUser,
+    createTokenForUser, filterEvaluations,
     getEvaluationsForScout,
     getUserIdFromToken,
     processCsv
@@ -153,9 +153,10 @@ router.route('/scout/:scoutId')
         }
     })
 
-router.post('/scout/:scoutId/evaluations/author/:authorId', async (req, res) => {
+router.post('/scout/:scoutId/evaluations', async (req: any, res) => {
+    console.log(req.body);
     try {
-        res.json(await createEvaluation(req.params.authorId, req.params.scoutId, req.body));
+        res.json(await createEvaluation(req.userId, req.params.scoutId, req.body));
     } catch (e) {
         console.error(e);
         res.sendStatus(500);

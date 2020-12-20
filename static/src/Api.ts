@@ -1,5 +1,5 @@
 import { ICourse, IScout } from '../../src/models';
-import { ALL_COURSE_URL, COURSE_URL, LOG_IN_URL } from './Constants';
+import { ALL_COURSE_URL, COURSE_URL, LOG_IN_URL, SCOUT_URL } from './Constants';
 
 export async function getTokenForUser(user: IScout): Promise<string | null> {
     const response = await fetch(LOG_IN_URL, {
@@ -56,5 +56,36 @@ export async function deleteCourse(courseId: string, token: string) {
         return;
     } else {
         throw new Error(`Error deleting course. Response code ${response.status}`)
+    }
+}
+
+export async function getScout(scoutId: string, token: string): Promise<IScout | null> {
+    const response = await fetch(`${SCOUT_URL}/${scoutId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+    if (response.status >= 200 && response.status <300) {
+        return await response.json() as IScout;
+    } else if (response.status === 400) {
+        return null;
+    } else {
+        throw new Error(`Error getting scout. Response code ${response.status}`)
+    }
+}
+
+export async function saveEvaluation(evaluation: any, scoutId: string, token: string): Promise<IScout> {
+    const response = await fetch(`${SCOUT_URL}/${scoutId}/evaluations`, {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(evaluation)
+    });
+    if (response.status >= 200 && response.status <300) {
+        return await response.json() as IScout;
+    } else {
+        throw new Error(`Error saving evaluation. Response code ${response.status}`)
     }
 }

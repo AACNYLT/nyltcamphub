@@ -3,9 +3,10 @@ import './App.css';
 import LoginComponent from './LoginComponent';
 import { MESSAGES, Screen } from './Constants';
 import MainListComponent from './MainListComponent';
-import { getAllCourses, getScoutForToken } from './Api';
+import { getAllCourses, getScout, getScoutForToken, saveEvaluation } from './Api';
 import { message, Spin } from 'antd';
 import AdminComponent from './AdminComponent';
+import ScoutComponent from './ScoutComponent';
 
 export default class App extends React.Component<any, any> {
     constructor(props: any) {
@@ -14,6 +15,8 @@ export default class App extends React.Component<any, any> {
         this.onLogIn = this.onLogIn.bind(this);
         this.onLoadAdmin = this.onLoadAdmin.bind(this);
         this.onLoadMain = this.onLoadMain.bind(this);
+        this.onLoadScout = this.onLoadScout.bind(this);
+        this.onSaveEvaluation = this.onSaveEvaluation.bind(this);
         this.onBackToLogin = this.onBackToLogin.bind(this);
         this.onBackToMain = this.onBackToMain.bind(this);
     }
@@ -65,6 +68,53 @@ export default class App extends React.Component<any, any> {
         }
     }
 
+    async onLoadScout(scoutId: string) {
+        this.setState({
+            loading: true
+        });
+        try {
+            const scout = await getScout(scoutId, this.state.token);
+            if (scout) {
+                this.setState({
+                    scout: scout,
+                    loading: false,
+                    screen: Screen.SCOUT
+                });
+            } else {
+                message.error(MESSAGES.SCOUT_NOT_FOUND);
+                this.setState({
+                    loading: false
+                });
+            }
+        } catch (e) {
+            console.error(e);
+            message.error(MESSAGES.LOAD_SCOUT_ERROR);
+            this.setState({
+                loading: false
+            });
+        }
+    }
+
+    async onSaveEvaluation(evaluation: any, scoutId: string) {
+        this.setState({
+            loading: true
+        });
+        try {
+            const scout = await saveEvaluation(evaluation, scoutId, this.state.token);
+            this.setState({
+                scout: scout,
+                loading: false
+            });
+            message.success(MESSAGES.SAVE_EVALUATION_SUCCESS);
+        } catch (e) {
+            console.error(e);
+            message.error(MESSAGES.SAVE_EVALUATION_ERROR);
+            this.setState({
+                loading: false
+            });
+        }
+    }
+
     onBackToLogin() {
         this.setState({
             user: {},
@@ -88,13 +138,20 @@ export default class App extends React.Component<any, any> {
             case Screen.MAIN_LIST:
                 return <Spin spinning={this.state.loading}><MainListComponent onBack={this.onBackToLogin}
                                                                               onLoadAdmin={this.onLoadAdmin}
+                                                                              onLoadScout={this.onLoadScout}
                                                                               refreshMain={this.onLoadMain}
                                                                               user={this.state.user}/></Spin>;
             case Screen.ADMIN:
                 return <Spin spinning={this.state.loading}><AdminComponent onBack={this.onBackToMain}
                                                                            courses={this.state.courses}
                                                                            refreshAdmin={this.onLoadAdmin}
-                                                                           token={this.state.token}/></Spin>
+                                                                           token={this.state.token}/></Spin>;
+            case Screen.SCOUT:
+                return <Spin spinning={this.state.loading}><ScoutComponent onBack={this.onBackToMain}
+                                                                           scout={this.state.scout}
+                                                                           onSaveEvaluation={this.onSaveEvaluation}
+                                                                           refreshScout={this.onLoadScout}
+                                                                           token={this.state.token}/></Spin>;
         }
     }
 }

@@ -1,6 +1,8 @@
 import { Course, Evaluation, ICourse, IEvaluation, IScout, Scout, ScoutType } from './models';
 import { query } from 'express';
 import { createQueryName } from './utils';
+import { filterEvaluations } from './route.controllers';
+import { ADMIN_PERMISSION_LEVEL } from './constants';
 
 export async function getScoutWithCourse(scoutId: string): Promise<IScout | null> {
     return await Scout.findById(scoutId).populate({
@@ -109,18 +111,30 @@ export async function getEvaluations(): Promise<IEvaluation[]> {
     }).populate('scout').exec();
 }
 
-export async function createEvaluation(authorId: string, subjectId: string, evaluationJson: any): Promise<IScout | null> {
+export async function createEvaluation(authorId: string, subjectId: string, evaluationJson: any): Promise<IScout | undefined> {
     evaluationJson.scout = subjectId;
     evaluationJson.author = authorId;
     const evaluation = new Evaluation(evaluationJson);
     const subject = await getScoutWithTheirEvaluations(subjectId);
     const author = await getScoutWithAuthoredEvaluations(authorId);
-    author?.evaluationsAsAuthor.push(evaluation);
-    subject?.evaluationsAsSubject.push(evaluation);
-    await evaluation.save();
-    await author?.save();
-    await subject?.save();
-    return subject;
+    if (subject && author) {
+        author.evaluationsAsAuthor.push(evaluation);
+        subject.evaluationsAsSubject.push(evaluation);
+        await evaluation.save();
+        await author.save();
+        await subject.save();
+        const updatedSubject = await subject.populate({
+            path: 'evaluationsAsSubject',
+            model: 'Evaluation',
+            populate: {
+                path: 'author',
+                model: 'Scout'
+            }
+        }).execPopulate();
+        return author.permissionLevel >= ADMIN_PERMISSION_LEVEL ? updatedSubject : filterEvaluations(updatedSubject, authorId);
+    } else {
+        throw new Error('Unable to find author or subject');
+    }
 }
 
 export async function createScout(scoutJson: any, courseId: string, scoutType: ScoutType): Promise<IScout> {
@@ -216,7 +230,6 @@ export async function updateEvaluation(evaluationId: string, evaluationJson: any
     const evaluation = await Evaluation.findById(evaluationId).exec();
     if (evaluation) {
         evaluation.day = evaluationJson.day ?? evaluation.day;
-        evaluation.isFinal = evaluationJson.isFinal ?? evaluation.isFinal;
         evaluation.knowledge = evaluationJson.knowledge ?? evaluation.knowledge;
         evaluation.skill = evaluationJson.skill ?? evaluation.skill;
         evaluation.confidence = evaluationJson.confidence ?? evaluation.confidence;

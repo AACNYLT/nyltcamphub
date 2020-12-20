@@ -43,7 +43,6 @@ export interface IEvaluation extends Document {
     scout: IScout['_id'],
     author: IScout['_id'],
     day: string,
-    isFinal: boolean,
     knowledge: number,
     skill: number,
     motivation: number,
@@ -63,7 +62,6 @@ const EvaluationSchema: Schema = new Schema({
         ref: 'Scout'
     },
     day: String,
-    isFinal: Boolean,
     knowledge: Number,
     skill: Number,
     motivation: Number,
