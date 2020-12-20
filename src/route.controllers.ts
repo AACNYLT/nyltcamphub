@@ -1,7 +1,8 @@
 import { IScout, ScoutType } from './models';
 import {
     createArrayOfScouts,
-    findScoutByNameAndBirthday, getEvaluations,
+    findScoutByNameAndBirthday,
+    getEvaluations,
     getScout,
     getScoutWithTheirEvaluations
 } from './database.controllers';
@@ -9,7 +10,6 @@ import jwt from 'jsonwebtoken';
 import { SECRET, SENIOR_STAFF_PERMISSION_LEVEL } from './constants';
 import { createDate, createQueryName, recommendationNumbertoString } from './utils';
 import csv from 'csvtojson/index';
-import exp from 'constants';
 import { json2csvAsync } from 'json-2-csv';
 
 export async function getEvaluationsForScout(scoutId: string, userId: string): Promise<IScout | null> {
@@ -60,7 +60,6 @@ export async function createEvaluationCsv(): Promise<String> {
 
 async function createFlatEvaluationJson(): Promise<any[]> {
     return (await getEvaluations()).map(evaluation => {
-        // @ts-ignore
         return {
             'Course': evaluation.author.course.unitName,
             'Course Date': evaluation.author.course.startDate,
@@ -81,7 +80,9 @@ async function createFlatEvaluationJson(): Promise<any[]> {
             'Motivation': evaluation.motivation,
             'Enthusiasm': evaluation.enthusiasm,
             'Recommended for Staff': recommendationNumbertoString(evaluation.recommend),
+        // @ts-ignore
             'Created': evaluation.createdAt,
+        // @ts-ignore
             'Updated': evaluation.updatedAt
         }
     });

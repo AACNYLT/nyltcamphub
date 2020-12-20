@@ -1,5 +1,5 @@
 import { ICourse, IScout } from '../../src/models';
-import { COURSE_URL, LOG_IN_URL } from './Constants';
+import { ALL_COURSE_URL, COURSE_URL, LOG_IN_URL } from './Constants';
 
 export async function getTokenForUser(user: IScout): Promise<string | null> {
     const response = await fetch(LOG_IN_URL, {
@@ -28,5 +28,33 @@ export async function getScoutForToken(token: string): Promise<IScout> {
         return course;
     } else {
         throw new Error(`Unable to parse response. Response code ${response.status}`)
+    }
+}
+
+export async function getAllCourses(token: string): Promise<ICourse[]> {
+    const response = await fetch(ALL_COURSE_URL, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+    const courses = await response.json() as ICourse[];
+    if (courses) {
+        return courses;
+    } else {
+        throw new Error(`Unable to parse response. Response code ${response.status}`)
+    }
+}
+
+export async function deleteCourse(courseId: string, token: string) {
+    const response = await fetch(`${COURSE_URL}/${courseId}`, {
+        method: 'DELETE',
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+    if (response.ok) {
+        return;
+    } else {
+        throw new Error(`Error deleting course. Response code ${response.status}`)
     }
 }

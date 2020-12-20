@@ -9,16 +9,18 @@ export default function MainListComponent(props: any) {
     return (
         <div>
             <PageHeader title={user.course.unitName} onBack={props.onBack} extra={user.permissionLevel > 3 ? [
-                <Button type="primary">Upload Data</Button>,
-            ] : []}/>
+                <Button onClick={props.onLoadAdmin}>Admin</Button>,
+                <Button onClick={props.onLoadMain} type="primary">Refresh</Button>
+            ] : [<Button onClick={props.onLoadMain} type="primary">Refresh</Button>]}/>
             <List itemLayout="horizontal" dataSource={course.participants} header="Participants" renderItem={item => {
                 return <List.Item>
-                    <List.Item.Meta title={`${item.firstName} ${item.lastName}`}/>
+                    <List.Item.Meta title={`${item.firstName} ${item.lastName}`} description={item.team}/>
                 </List.Item>
             }}/>
             <List itemLayout="horizontal" dataSource={course.staff} header="Staff" renderItem={item => {
                 return <List.Item>
-                    <List.Item.Meta title={`${item.firstName} ${item.lastName}`} description="SPL - Kazoo"/>
+                    <List.Item.Meta title={`${item.firstName} ${item.lastName}`}
+                                    description={`${item.position}${item.team ? ` - ${item.team}` : ''}`}/>
                 </List.Item>
             }}/>
         </div>

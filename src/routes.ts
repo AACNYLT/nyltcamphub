@@ -5,7 +5,8 @@ import {
     createScout,
     deleteCourse,
     deleteEvaluation,
-    deleteScout, getScout,
+    deleteScout,
+    getAllCourses,
     getScoutWithAuthoredEvaluations,
     getScoutWithCourse,
     updateCourse,
@@ -15,7 +16,8 @@ import {
 import { ScoutType } from './models';
 import multer from 'multer';
 import {
-    checkPermission, createEvaluationCsv,
+    checkPermission,
+    createEvaluationCsv,
     createTokenForUser,
     getEvaluationsForScout,
     getUserIdFromToken,
@@ -24,7 +26,7 @@ import {
 import { ADMIN_PERMISSION_LEVEL } from './constants';
 
 const router = express.Router();
-const upload = multer({dest: '/csv-temp'});
+const upload = multer({dest: '../csv-temp'});
 
 router.post('/login', async (req, res) => {
     try {
@@ -57,27 +59,9 @@ router.use((req, res, next) => {
 });
 
 router.route('/data')
-    .post(upload.single('file'), async (req: any, res) => {
-        if (req.body.courseId) {
-            try {
-                const scout = await getScout(req.userId);
-                if (scout && scout.permissionLevel >= ADMIN_PERMISSION_LEVEL) {
-                    res.json(await processCsv(req.file, req.body.courseId));
-                } else {
-                    res.status(401);
-                }
-            } catch (e) {
-                console.error(e);
-                res.sendStatus(500);
-            }
-        } else {
-            res.status(400).send('courseId body param needed');
-        }
-    })
     .get(async (req: any, res) => {
         try {
-            const scout = await getScout(req.userId);
-            if (scout && scout.permissionLevel >= ADMIN_PERMISSION_LEVEL) {
+            if (await checkPermission(req.userId, ADMIN_PERMISSION_LEVEL)) {
                 res.type('csv');
                 res.send(await createEvaluationCsv());
             } else {
@@ -88,6 +72,23 @@ router.route('/data')
             res.sendStatus(500);
         }
     });
+
+router.post('/data/course/:courseId', upload.single('file'), async (req: any, res) => {
+    if (req.params.courseId) {
+        try {
+            if (await checkPermission(req.userId, ADMIN_PERMISSION_LEVEL)) {
+                res.json(await processCsv(req.file, req.params.courseId));
+            } else {
+                res.status(401);
+            }
+        } catch (e) {
+            console.error(e);
+            res.sendStatus(500);
+        }
+    } else {
+        res.status(400).send('courseId body param needed');
+    }
+})
 
 router.get('/template', (req, res) => {
     res.sendFile('../media/CampHubTemplate.csv');
@@ -123,7 +124,7 @@ router.route('/scout/:scoutId')
     })
     .put(async (req: any, res) => {
         try {
-            if (await checkPermission(req.userId, 4)) {
+            if (await checkPermission(req.userId, ADMIN_PERMISSION_LEVEL)) {
                 const scout = await updateScout(req.params.scoutId, req.body);
                 if (scout !== null) {
                     res.json(scout);
@@ -140,7 +141,7 @@ router.route('/scout/:scoutId')
     })
     .delete(async (req: any, res) => {
         try {
-            if (await checkPermission(req.userId, 4)) {
+            if (await checkPermission(req.userId, ADMIN_PERMISSION_LEVEL)) {
                 await deleteScout(req.params.scoutId);
                 res.sendStatus(200);
             } else {
@@ -177,7 +178,7 @@ router.route('/course')
     })
     .post(async (req: any, res) => {
         try {
-            if (await checkPermission(req.userId, 4)) {
+            if (await checkPermission(req.userId, ADMIN_PERMISSION_LEVEL)) {
                 res.json(await createCourse(req.body));
             } else {
                 res.sendStatus(401);
@@ -188,10 +189,23 @@ router.route('/course')
         }
     });
 
+router.get('/course/all', async (req: any, res) => {
+    try {
+        if (await checkPermission(req.userId, ADMIN_PERMISSION_LEVEL)) {
+            res.json(await getAllCourses());
+        } else {
+            res.sendStatus(401);
+        }
+    } catch (e) {
+        console.error(e);
+        res.sendStatus(500);
+    }
+});
+
 router.route('/course/:courseId')
     .put(async (req: any, res) => {
         try {
-            if (await checkPermission(req.userId, 4)) {
+            if (await checkPermission(req.userId, ADMIN_PERMISSION_LEVEL)) {
                 const course = await updateCourse(req.params.courseId, req.body);
                 if (course !== null) {
                     res.json(course);
@@ -208,7 +222,7 @@ router.route('/course/:courseId')
     })
     .delete(async (req: any, res) => {
         try {
-            if (await checkPermission(req.userId, 4)) {
+            if (await checkPermission(req.userId, ADMIN_PERMISSION_LEVEL)) {
                 await deleteCourse(req.params.courseId);
                 res.sendStatus(200);
             }

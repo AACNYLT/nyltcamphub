@@ -12,6 +12,10 @@ ul {
   padding: 0;
 }
 
+.dropdown {
+  width: 200px;
+}
+
 .ant-list-item {
   cursor: pointer;
 }
