@@ -1,7 +1,7 @@
 import { IEvaluation, IScout } from '../../src/models';
 import React from 'react';
 import { Avatar, Button, Divider, Form, Input, List, message, PageHeader, Radio, Select, Slider, Upload } from 'antd';
-import { DATA_UPLOAD_URL, FORM_BUTTON_LAYOUT, FORM_LAYOUT, MESSAGES, SCOUT_URL } from './Constants';
+import { FORM_BUTTON_LAYOUT, FORM_LAYOUT, MESSAGES, SCOUT_URL } from './Constants';
 import { recommendationNumberToString } from './SharedUtils';
 import { CameraOutlined } from '@ant-design/icons';
 
