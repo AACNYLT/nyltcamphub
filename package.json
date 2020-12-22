@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node ./build/server.js",
     "build": "./scripts/build.sh",
+    "compile": "tsc",
     "start-dev": "nodemon server.ts",
-    "build-dev": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Aroon Narayanan",

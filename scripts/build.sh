@@ -3,7 +3,7 @@
 echo "Starting build..."
 rm -rf ./build
 npm install
-npm run build
+npm run compile
 echo "Built Node app"
 ls
 cd ./static
