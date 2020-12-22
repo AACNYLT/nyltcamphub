@@ -59,13 +59,29 @@ export async function deleteCourse(courseId: string, token: string) {
     }
 }
 
+export async function createCourse(course: ICourse, token: string) {
+    const response = await fetch(COURSE_URL, {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(course)
+    });
+    if (response.ok) {
+        return;
+    } else {
+        throw new Error(`Error creating course. Response code ${response.status}`)
+    }
+}
+
 export async function getScout(scoutId: string, token: string): Promise<IScout | null> {
     const response = await fetch(`${SCOUT_URL}/${scoutId}`, {
         headers: {
             Authorization: `Bearer ${token}`
         }
     });
-    if (response.status >= 200 && response.status <300) {
+    if (response.status >= 200 && response.status < 300) {
         return await response.json() as IScout;
     } else if (response.status === 400) {
         return null;
@@ -83,7 +99,7 @@ export async function saveEvaluation(evaluation: any, scoutId: string, token: st
         },
         body: JSON.stringify(evaluation)
     });
-    if (response.status >= 200 && response.status <300) {
+    if (response.status >= 200 && response.status < 300) {
         return await response.json() as IScout;
     } else {
         throw new Error(`Error saving evaluation. Response code ${response.status}`)

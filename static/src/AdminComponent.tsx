@@ -1,23 +1,36 @@
-import { Button, Divider, List, message, Modal, PageHeader, Popconfirm, Select, Upload } from 'antd';
+import {
+    Button,
+    DatePicker,
+    Divider,
+    Form,
+    Input,
+    List,
+    message,
+    PageHeader,
+    Popconfirm,
+    Popover,
+    Select,
+    Space,
+    Upload
+} from 'antd';
 import React from 'react';
 import { ICourse } from '../../src/models';
-import { deleteCourse } from './Api';
-import { DATA_UPLOAD_URL, MESSAGES } from './Constants';
-import { UploadOutlined } from '@ant-design/icons'
+import { createCourse, deleteCourse } from './Api';
+import { DATA_UPLOAD_URL, DATA_URL, FORM_BUTTON_LAYOUT, FORM_LAYOUT, MESSAGES, TEMPLATE_URL } from './Constants';
+import { DeleteOutlined, DownloadOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons'
 
 export default class AdminComponent extends React.Component<any, any> {
-    private courses: ICourse[] | null = null;
-
     constructor(props: any) {
         super(props);
-        this.courses = props.courses;
 
         this.state = {selectedCourse: ''};
 
         this.uploadCsv = this.uploadCsv.bind(this);
         this.populateCourseDropdown = this.populateCourseDropdown.bind(this);
+        this.populateCreateCourseForm = this.populateCreateCourseForm.bind(this);
         this.onChangeCourseDropdown = this.onChangeCourseDropdown.bind(this);
         this.onChangeFileUploadStatus = this.onChangeFileUploadStatus.bind(this);
+        this.onCreateCourse = this.onCreateCourse.bind(this);
         this.onDeleteCourse = this.onDeleteCourse.bind(this);
     }
 
@@ -26,9 +39,25 @@ export default class AdminComponent extends React.Component<any, any> {
     }
 
     populateCourseDropdown(): JSX.Element[] | undefined {
-        return this.courses?.map(course => {
+        return this.props.courses.map((course: ICourse) => {
             return <Select.Option value={course._id}>{course.unitName}</Select.Option>
         });
+    }
+
+    populateCreateCourseForm(): JSX.Element {
+        return (
+            <Form {...FORM_LAYOUT} onFinish={this.onCreateCourse}>
+                <Form.Item name='unitName' label='Unit Name' rules={[{required: true}]}>
+                    <Input/>
+                </Form.Item>
+                <Form.Item name='startDate' label='Start Date'>
+                    <DatePicker format="MM/DD/YYYY"/>
+                </Form.Item>
+                <Form.Item {...FORM_BUTTON_LAYOUT}>
+                    <Button type="primary" htmlType="submit">Create Course</Button>
+                </Form.Item>
+            </Form>
+        )
     }
 
     onChangeCourseDropdown(courseId: string) {
@@ -58,21 +87,29 @@ export default class AdminComponent extends React.Component<any, any> {
     }
 
     async onCreateCourse(course: ICourse) {
-
+        try {
+            await createCourse(course, this.props.token);
+            this.props.refreshAdmin();
+        } catch (e) {
+            message.error(MESSAGES.CREATE_COURSE_ERROR);
+        }
     }
 
     render() {
         return (
             <div>
                 <PageHeader title="Admin" onBack={this.props.onBack}/>
-                <Select className="dropdown" onChange={this.onChangeCourseDropdown}>
-                    {this.populateCourseDropdown()}
-                </Select>
-                <Upload name='file' disabled={!this.state.selectedCourse}
-                        action={`${DATA_UPLOAD_URL}/${this.state.selectedCourse}`}
-                        headers={{authorization: `Bearer ${this.props.token}`}}
-                        onChange={this.onChangeFileUploadStatus}><Button
-                    icon={<UploadOutlined/>}>Upload CSV</Button></Upload>
+                <Space>
+                    <Select className="dropdown" onChange={this.onChangeCourseDropdown}>
+                        {this.populateCourseDropdown()}
+                    </Select>
+                    <Upload name='file' disabled={!this.state.selectedCourse}
+                            action={`${DATA_UPLOAD_URL}/${this.state.selectedCourse}`}
+                            headers={{authorization: `Bearer ${this.props.token}`}}
+                            onChange={this.onChangeFileUploadStatus}><Button
+                        icon={<UploadOutlined/>} type='primary'>Upload CSV</Button></Upload>
+                    <a href={TEMPLATE_URL} download><Button icon={<DownloadOutlined/>}>Download Template</Button></a>
+                </Space>
                 <Divider>Manage Courses</Divider>
                 <List itemLayout="horizontal" dataSource={this.props.courses}
                       renderItem={(course: any) => {
@@ -81,14 +118,19 @@ export default class AdminComponent extends React.Component<any, any> {
                                   title="Are you sure you want to delete this course? All scouts and evaluations belonging to this course will also be deleted."
                                   okText="Yes" cancelText="No" onConfirm={async () => {
                                   await this.onDeleteCourse(course._id);
-                              }}><Button>Delete</Button></Popconfirm>
+                              }}><Button icon={<DeleteOutlined/>}/></Popconfirm>
                           ]}>
-                              <List.Item.Meta title={course.unitName} description={course.startDate}/>
+                              <List.Item.Meta title={course.unitName}
+                                              description={course.startDate ? new Date(course.startDate).toDateString() : ''}/>
                           </List.Item>
                       }}/>
-                      <Button>Add Course</Button>
+                <Popover content={this.populateCreateCourseForm()} trigger='click' title='Add Course'><Button
+                    icon={<PlusOutlined/>}>Add
+                    Course</Button></Popover>
                 <Divider>Manage Data</Divider>
-                <Button>Download Evaluations</Button>
+                <a href={`${DATA_URL}?token=${this.props.token}`} download><Button type='primary'
+                                                                                   icon={<DownloadOutlined/>}>Download
+                    Evaluations</Button></a>
             </div>
         )
     }

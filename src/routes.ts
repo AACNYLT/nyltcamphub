@@ -19,14 +19,15 @@ import {
     checkPermission,
     createEvaluationCsv,
     createTokenForUser, filterEvaluations,
-    getEvaluationsForScout,
+    getEvaluationsForScout, getImage,
     getUserIdFromToken,
-    processCsv
+    processCsv, processImage
 } from './route.controllers';
 import { ADMIN_PERMISSION_LEVEL } from './constants';
+import path from 'path';
 
 const router = express.Router();
-const upload = multer({dest: '../csv-temp'});
+const upload = multer({storage: multer.memoryStorage()});
 
 router.post('/login', async (req, res) => {
     try {
@@ -40,6 +41,45 @@ router.post('/login', async (req, res) => {
         console.error(e);
         res.sendStatus(500);
     }
+});
+
+router.get('/data', async (req: any, res) => {
+    try {
+        if (req.query.token) {
+            const userId = getUserIdFromToken(req.query.token);
+            if (userId) {
+                if (await checkPermission(userId, ADMIN_PERMISSION_LEVEL)) {
+                    res.type('csv');
+                    res.send(await createEvaluationCsv());
+                } else {
+                    res.sendStatus(401);
+                }
+            } else {
+                res.sendStatus(401);
+            }
+        } else {
+            res.status(400).send('Please include token as a query param.');
+        }
+    } catch (e) {
+        console.error(e);
+        res.sendStatus(500);
+    }
+});
+
+router.get('/scout/:scoutId/image', async (req: any, res) => {
+    try {
+        res.type('image');
+        res.send(await getImage(req.params.scoutId));
+
+    } catch (e) {
+        console.error(e);
+        res.sendStatus(500);
+
+    }
+});
+
+router.get('/template', (req, res) => {
+    res.sendFile(path.join(__dirname, '../media/CampHubTemplate.csv'));
 });
 
 router.use((req, res, next) => {
@@ -58,21 +98,6 @@ router.use((req, res, next) => {
     }
 });
 
-router.route('/data')
-    .get(async (req: any, res) => {
-        try {
-            if (await checkPermission(req.userId, ADMIN_PERMISSION_LEVEL)) {
-                res.type('csv');
-                res.send(await createEvaluationCsv());
-            } else {
-                res.status(401);
-            }
-        } catch (e) {
-            console.error(e);
-            res.sendStatus(500);
-        }
-    });
-
 router.post('/data/course/:courseId', upload.single('file'), async (req: any, res) => {
     if (req.params.courseId) {
         try {
@@ -89,10 +114,6 @@ router.post('/data/course/:courseId', upload.single('file'), async (req: any, re
         res.status(400).send('courseId body param needed');
     }
 })
-
-router.get('/template', (req, res) => {
-    res.sendFile('../media/CampHubTemplate.csv');
-});
 
 router.get('/scout', async (req: any, res) => {
     try {
@@ -154,9 +175,18 @@ router.route('/scout/:scoutId')
     })
 
 router.post('/scout/:scoutId/evaluations', async (req: any, res) => {
-    console.log(req.body);
     try {
         res.json(await createEvaluation(req.userId, req.params.scoutId, req.body));
+    } catch (e) {
+        console.error(e);
+        res.sendStatus(500);
+    }
+});
+
+router.post('/scout/:scoutId/image', upload.single('file'), async (req: any, res) => {
+    try {
+        await processImage(req.file, req.params.scoutId);
+        res.sendStatus(200);
     } catch (e) {
         console.error(e);
         res.sendStatus(500);

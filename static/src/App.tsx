@@ -151,6 +151,7 @@ export default class App extends React.Component<any, any> {
                                                                            scout={this.state.scout}
                                                                            onSaveEvaluation={this.onSaveEvaluation}
                                                                            refreshScout={this.onLoadScout}
+                                                                           showAdminFunctions={this.state.user?.permissionLevel > 3}
                                                                            token={this.state.token}/></Spin>;
         }
     }

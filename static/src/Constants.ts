@@ -3,6 +3,8 @@ export const COURSE_URL = `${process.env.REACT_APP_ENVIRONMENT === 'development'
 export const SCOUT_URL = `${process.env.REACT_APP_ENVIRONMENT === 'development' ? 'http://localhost' : ''}/api/scout`;
 export const DATA_UPLOAD_URL = `${process.env.REACT_APP_ENVIRONMENT === 'development' ? 'http://localhost' : ''}/api/data/course`;
 export const ALL_COURSE_URL = `${process.env.REACT_APP_ENVIRONMENT === 'development' ? 'http://localhost' : ''}/api/course/all`;
+export const DATA_URL = `${process.env.REACT_APP_ENVIRONMENT === 'development' ? 'http://localhost' : ''}/api/data`;
+export const TEMPLATE_URL = `${process.env.REACT_APP_ENVIRONMENT === 'development' ? 'http://localhost' : ''}/api/template`;
 
 export enum Screen {
     LOGIN,
@@ -22,6 +24,7 @@ export const MESSAGES = {
     SAVE_EVALUATION_SUCCESS: 'Evaluation saved!',
     SCOUT_NOT_FOUND: 'We couldn\'t find that scout. They may not exist in the system.',
     DELETE_COURSE_ERROR: 'We were unable to delete that course. Please try again.',
+    CREATE_COURSE_ERROR: 'We were unable to create that course. Please try again.',
     UPLOAD_CSV_SUCCESS: 'Successfully uploaded CSV!',
     UPLOAD_CSV_ERROR: 'Error uploading CSV. Please check the format.'
 }

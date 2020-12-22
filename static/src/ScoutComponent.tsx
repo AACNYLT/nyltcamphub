@@ -1,8 +1,9 @@
 import { IEvaluation, IScout } from '../../src/models';
 import React from 'react';
-import { Button, Divider, Form, Input, List, PageHeader, Radio, Select, Slider } from 'antd';
-import { FORM_BUTTON_LAYOUT, FORM_LAYOUT } from './Constants';
+import { Avatar, Button, Divider, Form, Input, List, message, PageHeader, Radio, Select, Slider, Upload } from 'antd';
+import { DATA_UPLOAD_URL, FORM_BUTTON_LAYOUT, FORM_LAYOUT, MESSAGES, SCOUT_URL } from './Constants';
 import { recommendationNumberToString } from './SharedUtils';
+import { CameraOutlined } from '@ant-design/icons';
 
 export default function ScoutComponent(props: any) {
     const scout: IScout = props.scout;
@@ -24,13 +25,31 @@ export default function ScoutComponent(props: any) {
         await props.onSaveEvaluation(formValues, scout._id);
         evaluationForm.resetFields();
     };
+    const onChangeFileUploadStatus = function (info: any) {
+        switch (info.file.status) {
+            case 'done':
+                message.success(MESSAGES.UPLOAD_CSV_SUCCESS);
+                break;
+            case 'error':
+                message.error(MESSAGES.UPLOAD_CSV_ERROR);
+                break;
+        }
+    }
     return <div>
-        <PageHeader title={`${scout.firstName} ${scout.lastName}`} subTitle={subtitle} onBack={props.onBack}/>
+        <PageHeader avatar={{src: `${SCOUT_URL}/${scout._id}/image`, size: 'large'}}
+                    title={`${scout.firstName} ${scout.lastName}`} subTitle={subtitle} onBack={props.onBack}
+                    extra={props.showAdminFunctions ? [
+                        <Upload name='file'
+                                action={`${SCOUT_URL}/${scout._id}/image`}
+                                headers={{authorization: `Bearer ${props.token}`}}
+                                onChange={onChangeFileUploadStatus}><Button
+                            icon={<CameraOutlined/>}/></Upload>
+                    ] : []}/>
         <Divider>New Evaluation</Divider>
         <Form {...FORM_LAYOUT}
               form={evaluationForm}
               onFinish={onSaveEvaluation}>
-            <Form.Item name="day" label="Day" rules={[{required: true}]} >
+            <Form.Item name="day" label="Day" rules={[{required: true}]}>
                 <Select>
                     <Select.Option value="Day 1">Day 1</Select.Option>
                     <Select.Option value="Day 2">Day 2</Select.Option>
@@ -69,7 +88,7 @@ export default function ScoutComponent(props: any) {
         <List itemLayout="vertical" dataSource={scout.evaluationsAsSubject}
               renderItem={(evaluation: IEvaluation) => {
                   return <List.Item>
-                      <List.Item.Meta title={evaluation.day}
+                      <List.Item.Meta avatar={<Avatar size='large' src={`${SCOUT_URL}/${evaluation.author._id}/image`} />} title={evaluation.day}
                                       description={`Evaluated by ${evaluation.author.firstName} ${evaluation.author.lastName} - ${evaluation.author.position}`}/>
                       <Slider min={1} max={5} value={evaluation.knowledge} disabled step={0.5}/>
                       <Slider min={1} max={5} value={evaluation.skill} disabled step={0.5}/>

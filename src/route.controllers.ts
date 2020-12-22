@@ -7,11 +7,28 @@ import {
     getScoutWithTheirEvaluations
 } from './database.controllers';
 import jwt from 'jsonwebtoken';
-import { SECRET, SENIOR_STAFF_PERMISSION_LEVEL } from './constants';
+import {
+    AZURE_CONTAINER_NAME,
+    AZURE_STORAGE_ACCOUNT_ACCESS_KEY,
+    AZURE_STORAGE_ACCOUNT_NAME,
+    SECRET,
+    SENIOR_STAFF_PERMISSION_LEVEL
+} from './constants';
 import { createDate, createQueryName } from './utils';
 import csv from 'csvtojson/index';
 import { json2csvAsync } from 'json-2-csv';
 import { recommendationNumberToString } from '../static/src/SharedUtils';
+import { BlobServiceClient, newPipeline, StorageSharedKeyCredential } from '@azure/storage-blob';
+import intoStream from 'into-stream';
+
+const sharedKeyCredential = new StorageSharedKeyCredential(
+    AZURE_STORAGE_ACCOUNT_NAME,
+    AZURE_STORAGE_ACCOUNT_ACCESS_KEY);
+const pipeline = newPipeline(sharedKeyCredential);
+const blobServiceClient = new BlobServiceClient(
+    `https://${AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net`,
+    pipeline
+);
 
 export async function getEvaluationsForScout(scoutId: string, userId: string): Promise<IScout | null> {
     const scout = await getScoutWithTheirEvaluations(scoutId);
@@ -52,6 +69,22 @@ export async function processCsv(file: Express.Multer.File, courseId: string) {
     });
     return [...(await createArrayOfScouts(participantArray, courseId, ScoutType.Participant)),
         ...(await createArrayOfScouts(staffArray, courseId, ScoutType.Staff))];
+}
+
+export async function processImage(file: Express.Multer.File, scoutId: string) {
+    const containerClient = blobServiceClient.getContainerClient(AZURE_CONTAINER_NAME);
+    const blockBlobClient = containerClient.getBlockBlobClient(scoutId);
+    await blockBlobClient.uploadStream(intoStream(file.buffer), undefined, undefined, {blobHTTPHeaders: {blobContentType: 'image/jpeg'}});
+}
+
+export async function getImage(scoutId: string): Promise<Buffer | null> {
+    const containerClient = blobServiceClient.getContainerClient(AZURE_CONTAINER_NAME);
+    const blockBlobClient = containerClient.getBlockBlobClient(scoutId);
+    if (await blockBlobClient.exists()) {
+        return blockBlobClient.downloadToBuffer();
+    } else {
+        return null;
+    }
 }
 
 export async function createEvaluationCsv(): Promise<String> {
