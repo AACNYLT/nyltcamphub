@@ -30,7 +30,7 @@ import path from 'path';
 import { createDate } from './utils';
 
 const router = express.Router();
-const csvupload = multer({dest: '/csv-temp'});
+const csvupload = multer({dest: path.join(__dirname, '/csv-temp')});
 const imageupload = multer({storage: multer.memoryStorage()});
 
 router.post('/login', async (req, res) => {
