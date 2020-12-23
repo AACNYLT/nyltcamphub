@@ -28,10 +28,10 @@ export default function ScoutComponent(props: any) {
     const onChangeFileUploadStatus = function (info: any) {
         switch (info.file.status) {
             case 'done':
-                message.success(MESSAGES.UPLOAD_CSV_SUCCESS);
+                message.success(MESSAGES.UPLOAD_IMAGE_SUCCESS);
                 break;
             case 'error':
-                message.error(MESSAGES.UPLOAD_CSV_ERROR);
+                message.error(MESSAGES.UPLOAD_IMAGE_ERROR);
                 break;
         }
     }

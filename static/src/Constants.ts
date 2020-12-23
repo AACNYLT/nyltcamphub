@@ -26,7 +26,9 @@ export const MESSAGES = {
     DELETE_COURSE_ERROR: 'We were unable to delete that course. Please try again.',
     CREATE_COURSE_ERROR: 'We were unable to create that course. Please try again.',
     UPLOAD_CSV_SUCCESS: 'Successfully uploaded CSV!',
-    UPLOAD_CSV_ERROR: 'Error uploading CSV. Please check the format.'
+    UPLOAD_IMAGE_SUCCESS: 'Successfully uploaded image!',
+    UPLOAD_CSV_ERROR: 'Error uploading CSV. Please check the format.',
+    UPLOAD_IMAGE_ERROR: 'Error uploading image. Please check the format.'
 }
 
 export const FORM_LAYOUT = {
