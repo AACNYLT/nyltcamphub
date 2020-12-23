@@ -1,5 +1,4 @@
 import { Course, Evaluation, ICourse, IEvaluation, IScout, Scout, ScoutType } from './models';
-import { query } from 'express';
 import { createQueryName } from './utils';
 import { filterEvaluations } from './route.controllers';
 import { ADMIN_PERMISSION_LEVEL } from './constants';

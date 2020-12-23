@@ -30,7 +30,8 @@ import path from 'path';
 import { createDate } from './utils';
 
 const router = express.Router();
-const upload = multer({storage: multer.memoryStorage()});
+const csvupload = multer({dest: '/csv-temp'});
+const imageupload = multer({storage: multer.memoryStorage()});
 
 router.post('/login', async (req, res) => {
     try {
@@ -40,25 +41,6 @@ router.post('/login', async (req, res) => {
         } else {
             res.sendStatus(401);
         }
-    } catch (e) {
-        console.error(e);
-        res.sendStatus(500);
-    }
-});
-
-// TODO: this is temporary
-router.get('/bootstrap', async (req, res) => {
-    try {
-        console.log('Creating course...');
-        const course = await createCourse({unitName: 'Default Course'});
-        console.log(`Course ${course._id} created`);
-        const user = await createScout({
-            firstName: 'Admin',
-            lastName: Math.floor(Math.random() * 10000).toString(),
-            dateOfBirth: createDate('01/01/2001')
-        }, course._id, ScoutType.Staff);
-        console.log(`User ${user._id} created`);
-        res.json(user);
     } catch (e) {
         console.error(e);
         res.sendStatus(500);
@@ -120,7 +102,7 @@ router.use((req, res, next) => {
     }
 });
 
-router.post('/data/course/:courseId', upload.single('file'), async (req: any, res) => {
+router.post('/data/course/:courseId', csvupload.single('file'), async (req: any, res) => {
     if (req.params.courseId) {
         try {
             if (await checkPermission(req.userId, ADMIN_PERMISSION_LEVEL)) {
@@ -205,7 +187,7 @@ router.post('/scout/:scoutId/evaluations', async (req: any, res) => {
     }
 });
 
-router.post('/scout/:scoutId/image', upload.single('file'), async (req: any, res) => {
+router.post('/scout/:scoutId/image', imageupload.single('file'), async (req: any, res) => {
     try {
         await processImage(req.file, req.params.scoutId);
         res.sendStatus(200);
