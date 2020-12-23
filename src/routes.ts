@@ -18,13 +18,16 @@ import multer from 'multer';
 import {
     checkPermission,
     createEvaluationCsv,
-    createTokenForUser, filterEvaluations,
-    getEvaluationsForScout, getImage,
+    createTokenForUser,
+    getEvaluationsForScout,
+    getImage,
     getUserIdFromToken,
-    processCsv, processImage
+    processCsv,
+    processImage
 } from './route.controllers';
 import { ADMIN_PERMISSION_LEVEL } from './constants';
 import path from 'path';
+import { createDate } from './utils';
 
 const router = express.Router();
 const upload = multer({storage: multer.memoryStorage()});
@@ -37,6 +40,25 @@ router.post('/login', async (req, res) => {
         } else {
             res.sendStatus(401);
         }
+    } catch (e) {
+        console.error(e);
+        res.sendStatus(500);
+    }
+});
+
+// TODO: this is temporary
+router.get('/bootstrap', async (req, res) => {
+    try {
+        console.log('Creating course...');
+        const course = await createCourse({unitName: 'Default Course'});
+        console.log(`Course ${course._id} created`);
+        const user = await createScout({
+            firstName: 'Admin',
+            lastName: Math.floor(Math.random() * 10000).toString(),
+            dateOfBirth: createDate('01/01/2001')
+        }, course._id, ScoutType.Staff);
+        console.log(`User ${user._id} created`);
+        res.json(user);
     } catch (e) {
         console.error(e);
         res.sendStatus(500);
