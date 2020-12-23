@@ -19,6 +19,20 @@ export default class App extends React.Component<any, any> {
         this.onSaveEvaluation = this.onSaveEvaluation.bind(this);
         this.onBackToLogin = this.onBackToLogin.bind(this);
         this.onBackToMain = this.onBackToMain.bind(this);
+        this.startLoading = this.startLoading.bind(this);
+        this.stopLoading = this.stopLoading.bind(this);
+    }
+
+    startLoading() {
+        this.setState({
+            loading: true
+        });
+    }
+
+    stopLoading() {
+        this.setState({
+            loading: false
+        });
     }
 
     async onLogIn(token: string) {
@@ -133,7 +147,9 @@ export default class App extends React.Component<any, any> {
         switch (this.state.screen) {
             case Screen.LOGIN:
                 return (
-                    <Spin spinning={this.state.loading}><LoginComponent onLogIn={this.onLogIn}/></Spin>
+                    <Spin spinning={this.state.loading}><LoginComponent startLoading={this.startLoading}
+                                                                        stopLoading={this.stopLoading}
+                                                                        onLogIn={this.onLogIn}/></Spin>
                 );
             case Screen.MAIN_LIST:
                 return <Spin spinning={this.state.loading}><MainListComponent onBack={this.onBackToLogin}

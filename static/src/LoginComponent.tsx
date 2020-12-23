@@ -8,6 +8,7 @@ export default function LoginComponent(props: any) {
 
     const onLogInClick = async function (formUser: IScout) {
         try {
+            props.startLoading();
             const token = await getTokenForUser(formUser);
             if (token) {
                 props.onLogIn(token);
@@ -15,6 +16,7 @@ export default function LoginComponent(props: any) {
                 message.warn(MESSAGES.LOGIN_NOT_FOUND);
             }
         } catch (e) {
+            props.stopLoading();
             console.error(e);
             message.error(MESSAGES.LOGIN_ERROR);
         }

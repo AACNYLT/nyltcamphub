@@ -16,8 +16,16 @@ import {
 import React from 'react';
 import { ICourse } from '../../src/models';
 import { createCourse, deleteCourse } from './Api';
-import { DATA_UPLOAD_URL, DATA_URL, FORM_BUTTON_LAYOUT, FORM_LAYOUT, MESSAGES, TEMPLATE_URL } from './Constants';
-import { DeleteOutlined, DownloadOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons'
+import {
+    COURSE_URL,
+    DATA_UPLOAD_URL,
+    DATA_URL,
+    FORM_BUTTON_LAYOUT,
+    FORM_LAYOUT,
+    MESSAGES,
+    TEMPLATE_URL
+} from './Constants';
+import { DeleteOutlined, DownloadOutlined, PlusOutlined, UploadOutlined, PictureOutlined } from '@ant-design/icons'
 
 export default class AdminComponent extends React.Component<any, any> {
     constructor(props: any) {
@@ -128,9 +136,16 @@ export default class AdminComponent extends React.Component<any, any> {
                     icon={<PlusOutlined/>}>Add
                     Course</Button></Popover>
                 <Divider>Manage Data</Divider>
-                <a href={`${DATA_URL}?token=${this.props.token}`} download><Button type='primary'
-                                                                                   icon={<DownloadOutlined/>}>Download
-                    Evaluations</Button></a>
+                <Space>
+                    <a href={`${DATA_URL}?token=${this.props.token}`} download><Button type='primary'
+                                                                                       icon={<DownloadOutlined/>}>Download
+                        Evaluations</Button></a>
+                    {this.state.selectedCourse ?
+                        <a href={`${COURSE_URL}/${this.state.selectedCourse}/images?token=${this.props.token}`}
+                           download><Button
+                                            icon={<PictureOutlined/>}>Download
+                            Images</Button></a> : null}
+                </Space>
             </div>
         )
     }

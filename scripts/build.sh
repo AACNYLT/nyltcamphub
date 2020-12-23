@@ -6,6 +6,9 @@ npm install
 npm run compile
 echo "Built Node app"
 ls
+echo "Copying media..."
+mkdir ./build/media
+mv ./media/* ./build/media
 cd ./static
 echo "Inside ./static"
 npm install

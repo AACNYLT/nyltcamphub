@@ -20,6 +20,7 @@ import { json2csvAsync } from 'json-2-csv';
 import { recommendationNumberToString } from '../static/src/SharedUtils';
 import { BlobServiceClient, newPipeline, StorageSharedKeyCredential } from '@azure/storage-blob';
 import intoStream from 'into-stream';
+import AdmZip from 'adm-zip';
 
 const sharedKeyCredential = new StorageSharedKeyCredential(
     AZURE_STORAGE_ACCOUNT_NAME,
@@ -78,13 +79,29 @@ export async function processImage(file: Express.Multer.File, scoutId: string) {
 }
 
 export async function getImage(scoutId: string): Promise<Buffer | null> {
+    console.log('scoutId', scoutId);
     const containerClient = blobServiceClient.getContainerClient(AZURE_CONTAINER_NAME);
     const blockBlobClient = containerClient.getBlockBlobClient(scoutId);
     if (await blockBlobClient.exists()) {
+        console.log('image exists');
         return blockBlobClient.downloadToBuffer();
     } else {
+        console.log('image null');
         return null;
     }
+}
+
+export async function getImageZip(scouts: IScout[]): Promise<Buffer> {
+    const zipFile = new AdmZip();
+    for (let i = 0; i < scouts.length; i++) {
+        console.log('C', scouts[i].lastName);
+        let scoutImageBuffer = await getImage(scouts[i]._id);
+        if (scoutImageBuffer) {
+            console.log('D', scouts[i].lastName);
+            zipFile.addFile(`${scouts[i].firstName}${scouts[i].lastName}.jpg`, scoutImageBuffer);
+        }
+    }
+    return zipFile.toBuffer();
 }
 
 export async function createEvaluationCsv(): Promise<String> {
