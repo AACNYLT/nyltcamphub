@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 
 import { DB_URL } from './src/constants';
 import { Routes } from './src/routes';
+import path from 'path';
 
 const app = express();
 
@@ -16,7 +17,7 @@ mongoose.connect(DB_URL, {useNewUrlParser: true})
 
 app.use('/api', Routes);
 
-app.use('/', express.static('./static/build'));
+app.use('/', express.static(path.join(__dirname, 'static')));
 
 const server = app.listen(process.env.PORT || 80, () => {
     // @ts-ignore
