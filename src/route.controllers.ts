@@ -130,6 +130,7 @@ async function createFlatEvaluationJson(): Promise<any[]> {
             'Motivation': evaluation.motivation,
             'Enthusiasm': evaluation.enthusiasm,
             'Recommended for Staff': recommendationNumberToString(evaluation.recommend),
+            'Comments': evaluation.comments,
             // @ts-ignore
             'Created': evaluation.createdAt,
             // @ts-ignore
