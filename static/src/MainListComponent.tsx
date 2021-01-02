@@ -24,9 +24,13 @@ export default function MainListComponent(props: any) {
                     <List.Item.Meta avatar={<Avatar size='large'
                                                     src={`${SCOUT_URL}/${item._id}/image`}/>}
                                     title={`${item.firstName} ${item.lastName}`} description={item.team}/>
+                    {user.permissionLevel > 2 ?
+                        <div>{item.evaluationsAsSubject ? item.evaluationsAsSubject.length : '0'} total
+                            evaluations</div> : null}
+
                 </List.Item>
             }}/>
-            <List itemLayout="horizontal" dataSource={course.staff} header="Staff" renderItem={item => {
+            <List itemLayout="horizontal" dataSource={course.staff} header="Staff" renderItem={(item: IScout) => {
                 return <List.Item key={item._id} onClick={() => {
                     if (user._id !== item._id) {
                         props.onLoadScout(item._id)
@@ -36,6 +40,9 @@ export default function MainListComponent(props: any) {
                                                     src={`${SCOUT_URL}/${item._id}/image`}/>}
                                     title={`${item.firstName} ${item.lastName}`}
                                     description={`${item.position}${item.team ? ` - ${item.team}` : ''}`}/>
+                    {user.permissionLevel > 2 ?
+                        <div>{item.evaluationsAsAuthor ? item.evaluationsAsAuthor.length : '0'} evaluations
+                            written</div> : null}
                 </List.Item>
             }}/>
         </div>
