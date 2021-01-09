@@ -203,7 +203,7 @@ export async function deleteScout(scoutId: string, keepInCourse?: boolean) {
 
 async function removeScoutFromCourse(course: ICourse, scoutId: string) {
     const staffIndex = course.staff.indexOf(scoutId);
-    const participantIndex = course.staff.indexOf(scoutId);
+    const participantIndex = course.participants.indexOf(scoutId);
     if (staffIndex > participantIndex) {
         course.staff.splice(staffIndex, 1);
     } else {
