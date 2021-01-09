@@ -236,6 +236,7 @@ export async function updateEvaluation(evaluationId: string, evaluationJson: any
         evaluation.enthusiasm = evaluationJson.enthusiasm ?? evaluation.enthusiasm;
         evaluation.comments = evaluationJson.comments ?? evaluation.comments;
         evaluation.recommend = evaluationJson.recommend ?? evaluation.recommend;
+        await evaluation.save();
         return evaluation;
     } else {
         return null;
@@ -253,6 +254,7 @@ export async function updateScout(scoutId: string, scoutJson: any): Promise<ISco
         scout.team = scoutJson.team ?? scout.team;
         scout.permissionLevel = scoutJson.permissionLevel ?? scout.permissionLevel;
         scout.imageUrl = scoutJson.imageUrl ?? scout.imageUrl;
+        await scout.save();
         return scout;
     } else {
         return null;
@@ -264,6 +266,7 @@ export async function updateCourse(courseId: string, courseJson: any): Promise<I
     if (course) {
         course.unitName = courseJson.unitName ?? course.unitName;
         course.startDate = courseJson.startDate ?? course.startDate;
+        await course.save();
         return course;
     } else {
         return null;
