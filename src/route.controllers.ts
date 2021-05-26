@@ -21,6 +21,7 @@ import { recommendationNumberToString } from '../static/src/SharedUtils';
 import { BlobServiceClient, newPipeline, StorageSharedKeyCredential } from '@azure/storage-blob';
 import intoStream from 'into-stream';
 import AdmZip from 'adm-zip';
+import createImageCollage, { Canvas } from 'nf-photo-collage';
 
 const sharedKeyCredential = new StorageSharedKeyCredential(
     AZURE_STORAGE_ACCOUNT_NAME,
@@ -94,14 +95,31 @@ export async function getImage(scoutId: string): Promise<Buffer | null> {
 export async function getImageZip(scouts: IScout[]): Promise<Buffer> {
     const zipFile = new AdmZip();
     for (let i = 0; i < scouts.length; i++) {
-        console.log('C', scouts[i].lastName);
         let scoutImageBuffer = await getImage(scouts[i]._id);
         if (scoutImageBuffer) {
-            console.log('D', scouts[i].lastName);
             zipFile.addFile(`${scouts[i].firstName}${scouts[i].lastName}.jpg`, scoutImageBuffer);
         }
     }
     return zipFile.toBuffer();
+}
+
+export async function getImageCollage(scouts: IScout[]): Promise<Canvas> {
+    const scoutImages: Buffer[] = [];
+    for (let i = 0; i < scouts.length; i++) {
+        let scoutImageBuffer = await getImage(scouts[i]._id);
+        if (scoutImageBuffer) {
+            scoutImages.push(scoutImageBuffer);
+        }
+    }
+    return await createImageCollage({
+        sources: scoutImages,
+        height: 6,
+        width: 6,
+        imageHeight: 90,
+        imageWidth: 90,
+        spacing: 24,
+        backgroundColor: '#ffffff', backgroundImage: ''
+    });
 }
 
 export async function createEvaluationCsv(): Promise<String> {

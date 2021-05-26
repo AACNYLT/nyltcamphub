@@ -20,7 +20,7 @@ import {
     createEvaluationCsv,
     createTokenForUser,
     getEvaluationsForScout,
-    getImage, getImageZip,
+    getImage, getImageCollage, getImageZip,
     getUserIdFromToken,
     processCsv,
     processImage
@@ -89,12 +89,40 @@ router.get('/course/:courseId/images', async (req: any, res) => {
             if (userId) {
                 if (await checkPermission(userId, SENIOR_STAFF_PERMISSION_LEVEL)) {
                     const course = await getCourseWithScouts(req.params.courseId);
-                    console.log('A', course);
                     if (course !== null) {
                         const scouts: IScout[] = [...course.staff, ...course.participants];
-                        console.log('B', scouts);
                         res.type('zip');
                         res.send(await getImageZip(scouts));
+                    } else {
+                        res.status(404).send('Course not found');
+                    }
+                } else {
+                    res.sendStatus(401);
+                }
+            } else {
+                res.sendStatus(401);
+            }
+        } else {
+            res.status(400).send('Please include token as a query param.');
+        }
+    } catch (e) {
+        console.error(e);
+        res.sendStatus(500);
+    }
+});
+
+router.get('/course/:courseId/collage', async (req: any, res) => {
+    try {
+        if (req.query.token) {
+            const userId = getUserIdFromToken(req.query.token);
+            if (userId) {
+                if (await checkPermission(userId, SENIOR_STAFF_PERMISSION_LEVEL)) {
+                    const course = await getCourseWithScouts(req.params.courseId);
+                    if (course !== null) {
+                        const scouts: IScout[] = [...course.staff, ...course.participants];
+                        res.type('jpeg');
+                        const collageCanvas = await getImageCollage(scouts);
+                        res.send(await collageCanvas.jpegStream());
                     } else {
                         res.status(404).send('Course not found');
                     }
