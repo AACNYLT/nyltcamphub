@@ -2,7 +2,7 @@ import { Avatar, Button, List, PageHeader, Select } from 'antd';
 import React from 'react';
 import { ICourse, IScout } from '../../src/models';
 import { ReloadOutlined, SettingOutlined } from '@ant-design/icons'
-import { SCOUT_URL } from './Constants';
+import { SCOUT_URL, Screen } from './Constants';
 
 
 export default function MainListComponent(props: any) {
@@ -11,7 +11,7 @@ export default function MainListComponent(props: any) {
     const courseList: ICourse[] = props.courses;
 
     const onSelectCourse = async function (courseId: string) {
-        await props.onSelectCourse(courseList.find(c => c._id === courseId)!);
+        await props.onSelectCourse(courseList.find(c => c._id === courseId)!, Screen.MAIN_LIST);
     }
 
     return (

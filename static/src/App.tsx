@@ -97,11 +97,18 @@ export default class App extends React.Component<any, any> {
         }
     }
 
-    async onSelectCourse(course: ICourse) {
+    async onSelectCourse(course: ICourse, screenToReload: Screen) {
         this.setState({
             selectedCourse: course
         });
-        await this.onLoadMain();
+        switch (screenToReload) {
+            case Screen.MAIN_LIST:
+                await this.onLoadMain();
+                break;
+            case Screen.ADMIN:
+                await this.onLoadAdmin();
+                break;
+        }
     }
 
     async onLoadAdmin() {
@@ -206,6 +213,8 @@ export default class App extends React.Component<any, any> {
                 return <Spin spinning={this.state.loading}><AdminComponent onBack={this.onBackToMain}
                                                                            courses={this.state.courses}
                                                                            refreshAdmin={this.onLoadAdmin}
+                                                                           selectedCourse={this.state.selectedCourse}
+                                                                           onSelectCourse={this.onSelectCourse}
                                                                            token={this.state.token}/></Spin>;
             case Screen.SCOUT:
                 return <Spin spinning={this.state.loading}><ScoutComponent onBack={this.onBackToMain}
