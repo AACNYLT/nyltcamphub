@@ -45,6 +45,20 @@ export async function getAllCourses(token: string): Promise<ICourse[]> {
     }
 }
 
+export async function getCourse(courseId: string, token: string): Promise<ICourse> {
+    const response = await fetch(`${COURSE_URL}/${courseId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+    const course = await response.json() as ICourse;
+    if (course) {
+        return course;
+    } else {
+        throw new Error(`Unable to parse response. Response code ${response.status}`)
+    }
+}
+
 export async function deleteCourse(courseId: string, token: string) {
     const response = await fetch(`${COURSE_URL}/${courseId}`, {
         method: 'DELETE',

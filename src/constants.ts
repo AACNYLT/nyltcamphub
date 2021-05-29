@@ -12,5 +12,9 @@ export const SECRET: string = process.env.SECRET ?? '';
 export const AZURE_CONTAINER_NAME: string = 'camphub-images';
 
 
-export const ADMIN_PERMISSION_LEVEL = 4;
-export const SENIOR_STAFF_PERMISSION_LEVEL = 3;
+export enum PermissionLevel {
+    PARTICIPANT = 1,
+    STAFF = 2,
+    SENIOR_STAFF = 3,
+    ADMIN = 4
+}

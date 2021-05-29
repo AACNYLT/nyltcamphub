@@ -1,4 +1,4 @@
-import { Avatar, Button, List, PageHeader } from 'antd';
+import { Avatar, Button, List, PageHeader, Select } from 'antd';
 import React from 'react';
 import { ICourse, IScout } from '../../src/models';
 import { ReloadOutlined, SettingOutlined } from '@ant-design/icons'
@@ -7,15 +7,25 @@ import { SCOUT_URL } from './Constants';
 
 export default function MainListComponent(props: any) {
     const user: IScout = props.user;
-    const course: ICourse = user.course;
+    const selectedCourse: ICourse = props.course;
+    const courseList: ICourse[] = props.courses;
+
+    const onSelectCourse = async function (courseId: string) {
+        await props.onSelectCourse(courseList.find(c => c._id === courseId)!);
+    }
 
     return (
         <div>
-            <PageHeader title={user.course.unitName} onBack={props.onBack} extra={user.permissionLevel > 3 ? [
+            <PageHeader title={selectedCourse.unitName} onBack={props.onBack} extra={user.permissionLevel > 3 ? [
+                <Select value={selectedCourse._id} onChange={onSelectCourse}>
+                    {courseList.map(course => {
+                        return <Select.Option value={course._id} key={course._id}>{course.unitName}</Select.Option>
+                    })}
+                </Select>,
                 <Button onClick={props.onLoadAdmin} icon={<SettingOutlined/>}>Admin</Button>,
                 <Button onClick={props.refreshMain} icon={<ReloadOutlined/>} type="primary"/>
             ] : [<Button onClick={props.refreshMain} icon={<ReloadOutlined/>} type="primary"/>]}/>
-            <List itemLayout="horizontal" dataSource={course.participants} header="Participants" renderItem={item => {
+            <List itemLayout="horizontal" dataSource={selectedCourse.participants} header="Participants" renderItem={item => {
                 return <List.Item key={item._id} onClick={() => {
                     if (user._id !== item._id) {
                         props.onLoadScout(item._id)
@@ -30,7 +40,7 @@ export default function MainListComponent(props: any) {
 
                 </List.Item>
             }}/>
-            <List itemLayout="horizontal" dataSource={course.staff} header="Staff" renderItem={(item: IScout) => {
+            <List itemLayout="horizontal" dataSource={selectedCourse.staff} header="Staff" renderItem={(item: IScout) => {
                 return <List.Item key={item._id} onClick={() => {
                     if (user._id !== item._id) {
                         props.onLoadScout(item._id)

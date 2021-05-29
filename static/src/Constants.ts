@@ -38,3 +38,10 @@ export const FORM_LAYOUT = {
 export const FORM_BUTTON_LAYOUT = {
     wrapperCol: {offset: 8, span: 16},
 };
+
+export enum PermissionLevel {
+    PARTICIPANT = 1,
+    STAFF = 2,
+    SENIOR_STAFF = 3,
+    ADMIN = 4
+}

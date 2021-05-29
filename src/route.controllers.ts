@@ -11,8 +11,8 @@ import {
     AZURE_CONTAINER_NAME,
     AZURE_STORAGE_ACCOUNT_ACCESS_KEY,
     AZURE_STORAGE_ACCOUNT_NAME,
-    SECRET,
-    SENIOR_STAFF_PERMISSION_LEVEL
+    PermissionLevel,
+    SECRET
 } from './constants';
 import { createDate, createQueryName } from './utils';
 import csv from 'csvtojson/index';
@@ -35,7 +35,7 @@ export async function getEvaluationsForScout(scoutId: string, userId: string): P
     const scout = await getScoutWithTheirEvaluations(scoutId);
     const user = await getScout(userId);
     if (user && scout) {
-        return user.permissionLevel < SENIOR_STAFF_PERMISSION_LEVEL ? filterEvaluations(scout, user._id) : scout;
+        return user.permissionLevel < PermissionLevel.SENIOR_STAFF ? filterEvaluations(scout, user._id) : scout;
     }
     return null;
 }
