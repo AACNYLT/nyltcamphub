@@ -1,7 +1,7 @@
 import { Course, Evaluation, ICourse, IEvaluation, IScout, Scout, ScoutType } from './models';
 import { createQueryName } from './utils';
 import { filterEvaluations } from './route.controllers';
-import { ADMIN_PERMISSION_LEVEL } from './constants';
+import { PermissionLevel } from './constants';
 
 export async function getScoutWithCourse(scoutId: string): Promise<IScout | null> {
     return await Scout.findById(scoutId).populate({
@@ -130,7 +130,7 @@ export async function createEvaluation(authorId: string, subjectId: string, eval
                 model: 'Scout'
             }
         }).execPopulate();
-        return author.permissionLevel >= ADMIN_PERMISSION_LEVEL ? updatedSubject : filterEvaluations(updatedSubject, authorId);
+        return author.permissionLevel >= PermissionLevel.ADMIN ? updatedSubject : filterEvaluations(updatedSubject, authorId);
     } else {
         throw new Error('Unable to find author or subject');
     }

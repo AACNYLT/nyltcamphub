@@ -1,5 +1,6 @@
 import {
     Button,
+    Card,
     DatePicker,
     Divider,
     Form,
@@ -9,6 +10,7 @@ import {
     PageHeader,
     Popconfirm,
     Popover,
+    Row,
     Select,
     Space,
     Upload
@@ -22,39 +24,21 @@ import {
     DATA_URL,
     FORM_BUTTON_LAYOUT,
     FORM_LAYOUT,
-    MESSAGES,
+    MESSAGES, Screen,
     TEMPLATE_URL
 } from './Constants';
 import { DeleteOutlined, DownloadOutlined, PlusOutlined, UploadOutlined, PictureOutlined } from '@ant-design/icons'
 
-export default class AdminComponent extends React.Component<any, any> {
-    constructor(props: any) {
-        super(props);
-
-        this.state = {selectedCourse: ''};
-
-        this.uploadCsv = this.uploadCsv.bind(this);
-        this.populateCourseDropdown = this.populateCourseDropdown.bind(this);
-        this.populateCreateCourseForm = this.populateCreateCourseForm.bind(this);
-        this.onChangeCourseDropdown = this.onChangeCourseDropdown.bind(this);
-        this.onChangeFileUploadStatus = this.onChangeFileUploadStatus.bind(this);
-        this.onCreateCourse = this.onCreateCourse.bind(this);
-        this.onDeleteCourse = this.onDeleteCourse.bind(this);
-    }
-
-    uploadCsv() {
-
-    }
-
-    populateCourseDropdown(): JSX.Element[] | undefined {
-        return this.props.courses.map((course: ICourse) => {
+export default function AdminComponent(props: any) {
+    const populateCourseDropdown = function (): JSX.Element[] | undefined {
+        return props.courses.map((course: ICourse) => {
             return <Select.Option value={course._id}>{course.unitName}</Select.Option>
         });
     }
 
-    populateCreateCourseForm(): JSX.Element {
+    const populateCreateCourseForm = function (): JSX.Element {
         return (
-            <Form {...FORM_LAYOUT} onFinish={this.onCreateCourse}>
+            <Form {...FORM_LAYOUT} onFinish={onCreateCourse}>
                 <Form.Item name='unitName' label='Unit Name' rules={[{required: true}]}>
                     <Input/>
                 </Form.Item>
@@ -68,13 +52,11 @@ export default class AdminComponent extends React.Component<any, any> {
         )
     }
 
-    onChangeCourseDropdown(courseId: string) {
-        this.setState({
-            selectedCourse: courseId
-        });
+    const onChangeCourseDropdown = async function (courseId: string) {
+        await props.onSelectCourse(props.courses.find((c: ICourse) => c._id === courseId)!, Screen.ADMIN);
     }
 
-    onChangeFileUploadStatus(info: any) {
+    const onChangeFileUploadStatus = function (info: any) {
         switch (info.file.status) {
             case 'done':
                 message.success(MESSAGES.UPLOAD_CSV_SUCCESS);
@@ -85,68 +67,71 @@ export default class AdminComponent extends React.Component<any, any> {
         }
     }
 
-    async onDeleteCourse(courseId: string) {
+    const onDeleteCourse = async function (courseId: string) {
         try {
-            await deleteCourse(courseId, this.props.token);
-            this.props.refreshAdmin();
+            await deleteCourse(courseId, props.token);
+            props.refreshAdmin();
         } catch (e) {
             message.error(MESSAGES.DELETE_COURSE_ERROR);
         }
     }
 
-    async onCreateCourse(course: ICourse) {
+    const onCreateCourse = async function (course: ICourse) {
         try {
-            await createCourse(course, this.props.token);
-            this.props.refreshAdmin();
+            await createCourse(course, props.token);
+            props.refreshAdmin();
         } catch (e) {
             message.error(MESSAGES.CREATE_COURSE_ERROR);
         }
     }
 
-    render() {
-        return (
-            <div>
-                <PageHeader title="Admin" onBack={this.props.onBack}/>
+    return (
+        <div>
+            <PageHeader title="Admin" onBack={props.onBack}
+                        extra={[<Select className="dropdown" value={props.selectedCourse._id}
+                                        onChange={onChangeCourseDropdown}>
+                            {populateCourseDropdown()}
+                        </Select>]}/>
+            <Divider>Manage {props.selectedCourse.unitName}</Divider>
+            <Space><Card title='Course Uploads' size='small'>
                 <Space>
-                    <Select className="dropdown" onChange={this.onChangeCourseDropdown}>
-                        {this.populateCourseDropdown()}
-                    </Select>
-                    <Upload name='file' disabled={!this.state.selectedCourse}
-                            action={`${DATA_UPLOAD_URL}/${this.state.selectedCourse}`}
-                            headers={{authorization: `Bearer ${this.props.token}`}}
-                            onChange={this.onChangeFileUploadStatus}><Button
+                    <Upload name='file'
+                            action={`${DATA_UPLOAD_URL}/${props.selectedCourse._id}`}
+                            headers={{authorization: `Bearer ${props.token}`}}
+                            onChange={onChangeFileUploadStatus}><Button
                         icon={<UploadOutlined/>} type='primary'>Upload CSV</Button></Upload>
                     <a href={TEMPLATE_URL} download><Button icon={<DownloadOutlined/>}>Download Template</Button></a>
                 </Space>
-                <Divider>Manage Courses</Divider>
-                <List itemLayout="horizontal" dataSource={this.props.courses}
-                      renderItem={(course: any) => {
-                          return <List.Item actions={[
-                              <Popconfirm
-                                  title="Are you sure you want to delete this course? All scouts and evaluations belonging to this course will also be deleted."
-                                  okText="Yes" cancelText="No" onConfirm={async () => {
-                                  await this.onDeleteCourse(course._id);
-                              }}><Button icon={<DeleteOutlined/>}/></Popconfirm>
-                          ]}>
-                              <List.Item.Meta title={course.unitName}
-                                              description={course.startDate ? new Date(course.startDate).toDateString() : ''}/>
-                          </List.Item>
-                      }}/>
-                <Popover content={this.populateCreateCourseForm()} trigger='click' title='Add Course'><Button
-                    icon={<PlusOutlined/>}>Add
-                    Course</Button></Popover>
-                <Divider>Manage Data</Divider>
-                <Space>
-                    <a href={`${DATA_URL}?token=${this.props.token}`} download><Button type='primary'
-                                                                                       icon={<DownloadOutlined/>}>Download
-                        Evaluations</Button></a>
-                    {this.state.selectedCourse ?
-                        <a href={`${COURSE_URL}/${this.state.selectedCourse}/images?token=${this.props.token}`}
+            </Card>
+                <Card title='Course Downloads' size='small'>
+                    <Space>
+                        <a href={`${DATA_URL}?token=${props.token}`} download><Button type='primary'
+                                                                                      icon={<DownloadOutlined/>}>Download
+                            Evaluations</Button></a>
+                        <a href={`${COURSE_URL}/${props.selectedCourse._id}/images?token=${props.token}`}
                            download><Button
-                                            icon={<PictureOutlined/>}>Download
-                            Images</Button></a> : null}
-                </Space>
-            </div>
-        )
-    }
+                            icon={<PictureOutlined/>}>Download
+                            Images</Button></a>
+                    </Space>
+                </Card></Space>
+            <Divider>Manage All Courses</Divider>
+            <List itemLayout="horizontal" dataSource={props.courses}
+                  renderItem={(course: any) => {
+                      return <List.Item actions={[
+                          <Popconfirm
+                              title="Are you sure you want to delete this course? All scouts and evaluations belonging to this course will also be deleted."
+                              okText="Yes" cancelText="No" onConfirm={async () => {
+                              await onDeleteCourse(course._id);
+                          }}><Button icon={<DeleteOutlined/>}/></Popconfirm>
+                      ]}>
+                          <List.Item.Meta title={course.unitName}
+                                          description={course.startDate ? new Date(course.startDate).toDateString() : ''}/>
+                      </List.Item>
+                  }}/>
+            <Popover content={populateCreateCourseForm()} trigger='click' title='Add Course'><Button
+                icon={<PlusOutlined/>}>Add
+                Course</Button></Popover>
+        </div>
+    )
+
 }

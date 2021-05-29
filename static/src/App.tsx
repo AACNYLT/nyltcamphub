@@ -1,26 +1,37 @@
 import React from 'react';
 import './App.css';
 import LoginComponent from './LoginComponent';
-import { MESSAGES, Screen } from './Constants';
+import { MESSAGES, PermissionLevel, Screen } from './Constants';
 import MainListComponent from './MainListComponent';
-import { getAllCourses, getScout, getScoutForToken, saveEvaluation } from './Api';
+import { getAllCourses, getCourse, getScout, getScoutForToken, saveEvaluation } from './Api';
 import { message, Spin } from 'antd';
 import AdminComponent from './AdminComponent';
 import ScoutComponent from './ScoutComponent';
+import { ICourse, IScout } from '../../src/models';
 
 export default class App extends React.Component<any, any> {
     constructor(props: any) {
         super(props);
-        this.state = {token: '', loading: false, screen: Screen.LOGIN, user: {}, scout: {}, allcourses: []};
+        this.state = {
+            token: '',
+            loading: false,
+            screen: Screen.LOGIN,
+            user: {},
+            scout: {},
+            selectedCourse: {},
+            courses: []
+        };
         this.onLogIn = this.onLogIn.bind(this);
         this.onLoadAdmin = this.onLoadAdmin.bind(this);
         this.onLoadMain = this.onLoadMain.bind(this);
+        this.onSelectCourse = this.onSelectCourse.bind(this);
         this.onLoadScout = this.onLoadScout.bind(this);
         this.onSaveEvaluation = this.onSaveEvaluation.bind(this);
         this.onBackToLogin = this.onBackToLogin.bind(this);
         this.onBackToMain = this.onBackToMain.bind(this);
         this.startLoading = this.startLoading.bind(this);
         this.stopLoading = this.stopLoading.bind(this);
+        this.setSelectedCourse = this.setSelectedCourse.bind(this);
     }
 
     startLoading() {
@@ -48,17 +59,55 @@ export default class App extends React.Component<any, any> {
         });
         try {
             const user = await getScoutForToken(this.state.token);
-            this.setState({
-                loading: false,
-                user: user,
-                screen: Screen.MAIN_LIST
-            });
+            if (user.permissionLevel >= PermissionLevel.ADMIN) {
+                const courses = await getAllCourses(this.state.token);
+                await this.setSelectedCourse(user);
+                this.setState({
+                    loading: false,
+                    courses: courses,
+                    user: user,
+                    screen: Screen.MAIN_LIST
+                });
+            } else {
+                this.setState({
+                    loading: false,
+                    user: user,
+                    screen: Screen.MAIN_LIST
+                });
+            }
         } catch (e) {
             console.error(e);
             message.error(MESSAGES.LOAD_COURSE_ERROR);
             this.setState({
                 loading: false
             });
+        }
+    }
+
+    async setSelectedCourse(user: IScout) {
+        if (this.state.selectedCourse && this.state.selectedCourse._id && this.state.selectedCourse._id !== user.course._id) {
+            const course = await getCourse(this.state.selectedCourse._id, this.state.token);
+            this.setState({
+                selectedCourse: course
+            });
+        } else {
+            this.setState({
+                selectedCourse: user.course
+            });
+        }
+    }
+
+    async onSelectCourse(course: ICourse, screenToReload: Screen) {
+        this.setState({
+            selectedCourse: course
+        });
+        switch (screenToReload) {
+            case Screen.MAIN_LIST:
+                await this.onLoadMain();
+                break;
+            case Screen.ADMIN:
+                await this.onLoadAdmin();
+                break;
         }
     }
 
@@ -153,14 +202,19 @@ export default class App extends React.Component<any, any> {
                 );
             case Screen.MAIN_LIST:
                 return <Spin spinning={this.state.loading}><MainListComponent onBack={this.onBackToLogin}
+                                                                              courses={this.state.courses}
                                                                               onLoadAdmin={this.onLoadAdmin}
                                                                               onLoadScout={this.onLoadScout}
+                                                                              onSelectCourse={this.onSelectCourse}
                                                                               refreshMain={this.onLoadMain}
+                                                                              course={this.state.selectedCourse}
                                                                               user={this.state.user}/></Spin>;
             case Screen.ADMIN:
                 return <Spin spinning={this.state.loading}><AdminComponent onBack={this.onBackToMain}
                                                                            courses={this.state.courses}
                                                                            refreshAdmin={this.onLoadAdmin}
+                                                                           selectedCourse={this.state.selectedCourse}
+                                                                           onSelectCourse={this.onSelectCourse}
                                                                            token={this.state.token}/></Spin>;
             case Screen.SCOUT:
                 return <Spin spinning={this.state.loading}><ScoutComponent onBack={this.onBackToMain}

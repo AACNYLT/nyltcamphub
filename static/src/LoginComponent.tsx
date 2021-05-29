@@ -13,6 +13,7 @@ export default function LoginComponent(props: any) {
             if (token) {
                 props.onLogIn(token);
             } else {
+                props.stopLoading();
                 message.warn(MESSAGES.LOGIN_NOT_FOUND);
             }
         } catch (e) {
