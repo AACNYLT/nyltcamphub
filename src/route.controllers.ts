@@ -104,13 +104,17 @@ export async function getImageZip(scouts: IScout[]): Promise<Buffer> {
     return zipFile.toBuffer();
 }
 
-export async function createEvaluationCsv(): Promise<String> {
-    const evaluationJson = await createFlatEvaluationJson();
+export async function createEvaluationCsv(courseId?: string): Promise<String> {
+    const evaluationJson = await createFlatEvaluationJson(courseId);
     return await json2csvAsync(evaluationJson);
 }
 
-async function createFlatEvaluationJson(): Promise<any[]> {
-    return (await getEvaluations()).map(evaluation => {
+async function createFlatEvaluationJson(courseId?: string): Promise<any[]> {
+    let evaluations = await getEvaluations();
+    if (courseId) {
+        evaluations = evaluations.filter(evaluation => evaluation.scout.course.toString() === courseId);
+    }
+    return evaluations.map(evaluation => {
         return {
             'Course': evaluation.author.course.unitName,
             'Course Date': evaluation.author.course.startDate,
@@ -118,7 +122,7 @@ async function createFlatEvaluationJson(): Promise<any[]> {
             'Last Name': evaluation.scout.lastName,
             'Date of Birth': evaluation.scout.dateOfBirth,
             'Team': evaluation.scout.team,
-            'Position': evaluation.scout.postion,
+            'Position': evaluation.scout.position,
             'Author First Name': evaluation.author.firstName,
             'Author Last Name': evaluation.author.lastName,
             'Author Date of Birth': evaluation.author.dateOfBirth,

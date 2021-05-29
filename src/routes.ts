@@ -71,6 +71,29 @@ router.get('/data', async (req: any, res) => {
     }
 });
 
+router.get('/data/:courseId', async (req: any, res) => {
+    try {
+        if (req.query.token) {
+            const userId = getUserIdFromToken(req.query.token);
+            if (userId) {
+                if (await checkPermission(userId, PermissionLevel.ADMIN)) {
+                    res.type('csv');
+                    res.send(await createEvaluationCsv(req.params.courseId));
+                } else {
+                    res.sendStatus(401);
+                }
+            } else {
+                res.sendStatus(401);
+            }
+        } else {
+            res.status(400).send('Please include token as a query param.');
+        }
+    } catch (e) {
+        console.error(e);
+        res.sendStatus(500);
+    }
+});
+
 router.get('/scout/:scoutId/image', async (req: any, res) => {
     try {
         res.type('image');
