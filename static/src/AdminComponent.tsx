@@ -105,7 +105,7 @@ export default function AdminComponent(props: any) {
             </Card>
                 <Card title='Course Downloads' size='small'>
                     <Space>
-                        <a href={`${DATA_URL}?token=${props.token}`} download><Button type='primary'
+                        <a href={`${DATA_URL}/${props.selectedCourse._id}?token=${props.token}`} download><Button type='primary'
                                                                                       icon={<DownloadOutlined/>}>Download
                             Evaluations</Button></a>
                         <a href={`${COURSE_URL}/${props.selectedCourse._id}/images?token=${props.token}`}
