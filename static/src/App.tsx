@@ -72,6 +72,7 @@ export default class App extends React.Component<any, any> {
                 this.setState({
                     loading: false,
                     user: user,
+                    selectedCourse: user.course,
                     screen: Screen.MAIN_LIST
                 });
             }
