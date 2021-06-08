@@ -10,3 +10,9 @@ export function recommendationNumberToString(recommend: number): string {
             return 'N/A';
     }
 }
+
+export function removeTimezoneOffset(moment: any): Date {
+    let date = moment.toDate();
+    date.setHours(date.getHours() - (date.getTimezoneOffset() / 60))
+    return date;
+}
