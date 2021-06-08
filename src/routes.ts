@@ -113,10 +113,8 @@ router.get('/course/:courseId/images', async (req: any, res) => {
             if (userId) {
                 if (await checkPermission(userId, PermissionLevel.SENIOR_STAFF)) {
                     const course = await getCourseWithScouts(req.params.courseId);
-                    console.log('A', course);
                     if (course !== null) {
                         const scouts: IScout[] = [...course.staff, ...course.participants];
-                        console.log('B', scouts);
                         res.type('zip');
                         res.send(await getImageZip(scouts));
                     } else {

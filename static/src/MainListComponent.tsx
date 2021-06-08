@@ -25,7 +25,7 @@ export default function MainListComponent(props: any) {
                 <Button onClick={props.onLoadAdmin} icon={<SettingOutlined/>}>Admin</Button>,
                 <Button onClick={props.refreshMain} icon={<ReloadOutlined/>} type="primary"/>
             ] : [<Button onClick={props.refreshMain} icon={<ReloadOutlined/>} type="primary"/>]}/>
-            <List itemLayout="horizontal" dataSource={selectedCourse.participants} header="Participants" renderItem={item => {
+            <List itemLayout="horizontal" dataSource={selectedCourse.participants} header={`Participants (${selectedCourse.participants.length})`} renderItem={item => {
                 return <List.Item key={item._id} onClick={() => {
                     if (user._id !== item._id) {
                         props.onLoadScout(item._id)
@@ -40,7 +40,7 @@ export default function MainListComponent(props: any) {
 
                 </List.Item>
             }}/>
-            <List itemLayout="horizontal" dataSource={selectedCourse.staff} header="Staff" renderItem={(item: IScout) => {
+            <List itemLayout="horizontal" dataSource={selectedCourse.staff} header={`Staff (${selectedCourse.staff.length})`} renderItem={(item: IScout) => {
                 return <List.Item key={item._id} onClick={() => {
                     if (user._id !== item._id) {
                         props.onLoadScout(item._id)
