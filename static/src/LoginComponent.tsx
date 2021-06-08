@@ -3,12 +3,14 @@ import { Button, DatePicker, Form, Input, message } from 'antd';
 import { IScout } from '../../src/models';
 import { getTokenForUser } from './Api';
 import { MESSAGES, FORM_BUTTON_LAYOUT, FORM_LAYOUT } from './Constants';
+import { removeTimezoneOffset } from './SharedUtils';
 
 export default function LoginComponent(props: any) {
 
     const onLogInClick = async function (formUser: IScout) {
         try {
             props.startLoading();
+            formUser.dateOfBirth = removeTimezoneOffset(formUser.dateOfBirth);
             const token = await getTokenForUser(formUser);
             if (token) {
                 props.onLogIn(token);
